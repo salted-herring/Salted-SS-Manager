@@ -8,6 +8,7 @@ class Server extends DataObject {
 		'FingerPrint'		=>	'Text',
 		'DeployUser'		=>	'Varchar(256)',
 		'DeployPass'		=>	'Varchar(256)',
+		'RequireSudo'		=>	'Boolean'
 	);
 
 	protected static $default_sort = array(
@@ -16,6 +17,10 @@ class Server extends DataObject {
 
 	protected static $has_one = array(
 		'Site'				=>	'Site'
+	);
+	
+	protected static $belongs_many_many = array(
+		'Environments'		=>	'Environment'
 	);
 
 	protected static $defaults = array(

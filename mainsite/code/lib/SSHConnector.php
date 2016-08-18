@@ -50,13 +50,21 @@ class SSHConnector {
     public function exec($cmd) { 
         if (!($stream = ssh2_exec($this->connection, $cmd))) { 
             throw new Exception('SSH command failed'); 
-        } 
+        }
+		$errstr = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
+		
         stream_set_blocking($stream, true); 
-        $data = ""; 
+		stream_set_blocking($errstr, true);
+        /*$data = ""; 
         while ($buf = fread($stream, 4096)) { 
             $data .= $buf; 
-        } 
+        }*/
+		$data = stream_get_contents($stream);
+		if (!empty($errstr)) {
+			$data .= stream_get_contents($errstr); 
+		}
         fclose($stream); 
+		fclose($errstr);
         return $data; 
     } 
     public function disconnect() { 
