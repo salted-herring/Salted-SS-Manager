@@ -1,0 +1,1983 @@
+@charset "UTF-8";
+/**
+ * @file styles.scss
+ *
+ * Main stylesheet.
+ * */
+/**
+ * Import external libraries.
+ * */
+/**
+ * import config.
+ * */
+/* ===========================
+ * Typography
+ * =========================== */
+/* ===========================
+ * Grid
+ * =========================== */
+/**
+ * Responsive breakpoints
+ * */
+/**
+ * @file _colours.scss
+ *
+ * Colours used in the site.
+ *
+ * Prefix all colours with a namespace so that we can use theming if necessary.
+ * The prefix is usually initials of the project - e.g. Salted Herring becomes $sh -> $sh-green: green.
+ * */
+/**
+ * Define Global colours - collections of colours that can be used throughout the site:
+ *
+ *  $GLOBAL_COLOURS:    ("green", $we-green), ("teal", $we-teal),
+ *						("black", $we-black), ("grey", $we-grey),
+ *						("light-grey", $we-light-grey), ("white", $we-white),
+ *						("mid-grey", $we-mid-grey);
+ * */
+/**
+ * @file _mixins.scss
+ *
+ * Various mixins used throughout the stylesheets.
+ * */
+/**
+ * Hack to override issue with compass box-sizing parsing of strings.
+ * */
+/**
+ * Vertical alignment transformation
+ * */
+/**
+ * Horizontal alignment transformation
+ * */
+/**
+ * Clip path
+ * */
+/**
+ * Font smoothing - see: https://maximilianhoffmann.com/posts/better-font-rendering-on-osx
+ * */
+/*
+ * Font feature settings - see: https://github.com/bitmanic/font-feature-settings
+ * */
+/**
+ * Grouping content - e.g. rows - fixes float boxes.
+ * */
+/**
+ * Triangle generation
+ * */
+/**
+ * How to make 3-corner-rounded triangle in CSS (SO)
+ * http://stackoverflow.com/q/14446677/1397351
+ */
+/**
+ * Disable text selection
+ * */
+/**
+ * @file _grid.scss
+ *
+ * Grid configuration
+ * */
+.container {
+  width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+}
+.container:after {
+  content: " ";
+  display: block;
+  clear: both;
+}
+
+.row {
+  overflow: hidden;
+  *zoom: 1;
+  clear: both;
+}
+.row.overflow {
+  overflow: visible;
+}
+.row.padding {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.row .grid_4:nth-child(3n) {
+  margin-right: 0;
+}
+
+.grid_1 {
+  width: 60px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 60px;
+  max-width: 60px;
+  _width: 60px;
+}
+.grid_1:last-child {
+  margin-right: 0;
+}
+.grid_1.center:last-child {
+  margin-right: auto;
+}
+
+.grid_1_wide {
+  width: 60px;
+}
+
+.grid_2 {
+  width: 140px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.grid_2:last-child {
+  margin-right: 0;
+}
+.grid_2.center:last-child {
+  margin-right: auto;
+}
+
+.grid_2_wide {
+  width: 140px;
+}
+
+.grid_3 {
+  width: 220px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.grid_3:last-child {
+  margin-right: 0;
+}
+.grid_3.center:last-child {
+  margin-right: auto;
+}
+
+.grid_3_wide {
+  width: 220px;
+}
+
+.grid_4 {
+  width: 300px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.grid_4:last-child {
+  margin-right: 0;
+}
+.grid_4.center:last-child {
+  margin-right: auto;
+}
+
+.grid_4_wide {
+  width: 300px;
+}
+
+.grid_5 {
+  width: 380px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.grid_5:last-child {
+  margin-right: 0;
+}
+.grid_5.center:last-child {
+  margin-right: auto;
+}
+
+.grid_5_wide {
+  width: 380px;
+}
+
+.grid_6 {
+  width: 460.0px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.grid_6:last-child {
+  margin-right: 0;
+}
+.grid_6.center:last-child {
+  margin-right: auto;
+}
+
+.grid_6_wide {
+  width: 460.0px;
+}
+
+.grid_7 {
+  width: 540px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.grid_7:last-child {
+  margin-right: 0;
+}
+.grid_7.center:last-child {
+  margin-right: auto;
+}
+
+.grid_7_wide {
+  width: 540px;
+}
+
+.grid_8 {
+  width: 620.0px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.grid_8:last-child {
+  margin-right: 0;
+}
+.grid_8.center:last-child {
+  margin-right: auto;
+}
+
+.grid_8_wide {
+  width: 620.0px;
+}
+
+.grid_9 {
+  width: 700px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.grid_9:last-child {
+  margin-right: 0;
+}
+.grid_9.center:last-child {
+  margin-right: auto;
+}
+
+.grid_9_wide {
+  width: 700px;
+}
+
+.grid_10 {
+  width: 780px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.grid_10:last-child {
+  margin-right: 0;
+}
+.grid_10.center:last-child {
+  margin-right: auto;
+}
+
+.grid_10_wide {
+  width: 780px;
+}
+
+.grid_11 {
+  width: 860.0px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.grid_11:last-child {
+  margin-right: 0;
+}
+.grid_11.center:last-child {
+  margin-right: auto;
+}
+
+.grid_11_wide {
+  width: 860.0px;
+}
+
+.grid_12 {
+  width: 940px;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.grid_12.center:last-child {
+  margin-right: auto;
+}
+
+.grid_12_wide {
+  width: 940px;
+}
+
+[class*="grid_"].last {
+  float: right;
+}
+
+.alpha {
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+  margin-left: -20px;
+  padding-left: 20px;
+  padding-right: 0;
+}
+
+.spacer_1 {
+  margin-left: 90px;
+}
+
+.after_1 {
+  margin-right: 90px;
+}
+
+.spacer_2 {
+  margin-left: 170px;
+}
+
+.after_2 {
+  margin-right: 170px;
+}
+
+.spacer_3 {
+  margin-left: 250px;
+}
+
+.after_3 {
+  margin-right: 250px;
+}
+
+.spacer_4 {
+  margin-left: 330px;
+}
+
+.after_4 {
+  margin-right: 330px;
+}
+
+.spacer_5 {
+  margin-left: 410.0px;
+}
+
+.after_5 {
+  margin-right: 410.0px;
+}
+
+.spacer_6 {
+  margin-left: 490px;
+}
+
+.after_6 {
+  margin-right: 490px;
+}
+
+.spacer_7 {
+  margin-left: 570.0px;
+}
+
+.after_7 {
+  margin-right: 570.0px;
+}
+
+.spacer_8 {
+  margin-left: 650px;
+}
+
+.after_8 {
+  margin-right: 650px;
+}
+
+.spacer_9 {
+  margin-left: 730px;
+}
+
+.after_9 {
+  margin-right: 730px;
+}
+
+.spacer_10 {
+  margin-left: 810.0px;
+}
+
+.after_10 {
+  margin-right: 810.0px;
+}
+
+.spacer_11 {
+  margin-left: 890px;
+}
+
+.after_11 {
+  margin-right: 890px;
+}
+
+.spacer_12 {
+  margin-left: 970px;
+}
+
+.after_12 {
+  margin-right: 970px;
+}
+
+/* ===========================
+ * Responsive Grid
+ * =========================== */
+@media (max-width: 959px) {
+  .alpha {
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .grid_6,
+  .grid_6_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_6:last-child {
+    margin-right: auto;
+  }
+
+  .grid_7,
+  .grid_7_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_7:last-child {
+    margin-right: auto;
+  }
+
+  .grid_8,
+  .grid_8_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_8:last-child {
+    margin-right: auto;
+  }
+
+  .grid_9,
+  .grid_9_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_9:last-child {
+    margin-right: auto;
+  }
+
+  .grid_10,
+  .grid_10_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_10:last-child {
+    margin-right: auto;
+  }
+
+  .grid_11,
+  .grid_11_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_11:last-child {
+    margin-right: auto;
+  }
+
+  .grid_12,
+  .grid_12_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_12:last-child {
+    margin-right: auto;
+  }
+}
+/* ===========================
+ * iPad to Desktop
+ * =========================== */
+/* ===========================
+ * iPhone to iPad
+ * =========================== */
+/* ===========================
+ * iPhone
+ * =========================== */
+@media (min-width: 0) and (max-width: 735px) {
+  body {
+    background: red;
+  }
+
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .grid_1,
+  .grid_1_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_1:last-child {
+    margin-right: auto;
+  }
+
+  .grid_2,
+  .grid_2_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_2:last-child {
+    margin-right: auto;
+  }
+
+  .grid_3,
+  .grid_3_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_3:last-child {
+    margin-right: auto;
+  }
+
+  .grid_4,
+  .grid_4_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_4:last-child {
+    margin-right: auto;
+  }
+
+  .grid_5,
+  .grid_5_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_5:last-child {
+    margin-right: auto;
+  }
+
+  .grid_6,
+  .grid_6_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_6:last-child {
+    margin-right: auto;
+  }
+
+  .grid_7,
+  .grid_7_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_7:last-child {
+    margin-right: auto;
+  }
+
+  .grid_8,
+  .grid_8_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_8:last-child {
+    margin-right: auto;
+  }
+
+  .grid_9,
+  .grid_9_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_9:last-child {
+    margin-right: auto;
+  }
+
+  .grid_10,
+  .grid_10_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_10:last-child {
+    margin-right: auto;
+  }
+
+  .grid_11,
+  .grid_11_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_11:last-child {
+    margin-right: auto;
+  }
+
+  .grid_12,
+  .grid_12_wide {
+    width: 100%;
+    max-width: 40rem;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid_12:last-child {
+    margin-right: auto;
+  }
+}
+/**
+ * @file _fonts.scss
+ *
+ * Fonts used in the project
+ * */
+/**
+ * Fontello
+ * */
+/*
+@include font-face('fontello', font-files('fontello.woff', 'fontello.woff2', 'fontello.ttf', 'fontello.svg'), 'fontello.eot', normal,
+					normal);
+*/
+/**
+ * Example font import:
+ * */
+/*
+@include font-face('RealtimeStencil', font-files('30669F_0_0.woff', '30669F_0_0.woff2', '30669F_0_0.ttf',
+										'30669F_0_0.svg'), '30669F_0_0.eot', bold, normal);
+*/
+/**
+ * Fontello config:
+ * - Update with the values output by fontello.
+ * */
+.icon-dashboard {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-dashboard:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-login {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-login:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-missions {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-missions:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-search {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-search:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-upload {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-upload:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-arrow {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-arrow:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-crew {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-crew:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-cup {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-cup:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-down {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-down:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-duration {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-duration:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-liked {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-liked:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-minus {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-minus:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-next {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-next:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-plus {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-plus:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-print {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-print:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-safety {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-safety:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-tips {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-tips:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-tools {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-tools:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-points {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-points:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-right-big {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-right-big:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-facebook {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-facebook:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-instagram {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-instagram:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-twitter {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-twitter:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-cancel {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-cancel:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-unlock {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-unlock:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-rubbish {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-rubbish:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-circle-empty {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-circle-empty:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-dot-circled {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-dot-circled:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-check {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-check:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-check-empty {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-check-empty:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-ok {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-ok:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-spin {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-spin:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+.icon-salted-herring {
+  font-size: 0;
+  line-height: 0;
+  text-indent: -1000000px;
+}
+.icon-salted-herring:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 0.875rem;
+  text-indent: 0;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "";
+}
+
+/**
+ * @file _sprites.scss
+ *
+ * Sprite generation - all icons are served from the public/assets/icons directory.
+ * */
+/**
+ * Wraps any styles in a retina media query.
+ */
+/**
+ * Option variable to define the spacing between images in the generated sprite
+ */
+/**
+ * A mixin to create retina sprites with hover & active states
+ *
+ * You have to register a pair of sprites using `{@link #retina-sprite-add}` and then you can use this mixin:
+ *
+ *     @include retina-sprite-add(icons, "icons/*.png", "icons-retina/*.png");
+ *
+ *     .my-icon {
+ *       @include retina-sprite(icon-name, icons);
+ *     }
+ *
+ * @param {String} $name
+ * @param {String} [$sprite-name]
+ * @param {Boolean} [$hover=false]
+ * @param {Boolean} [$active=false]
+ */
+/**
+ * @param {String} $name
+ * @param {String} $path
+ * @param {String} $path2x
+ */
+/**
+ * Import Sprite sheet.
+ * */
+html {
+  font-family: sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+  display: block;
+}
+
+audio,
+canvas,
+progress,
+video {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+audio:not([controls]) {
+  display: none;
+  height: 0;
+}
+
+[hidden],
+template {
+  display: none;
+}
+
+a {
+  background-color: transparent;
+}
+
+a:active,
+a:hover {
+  outline: 0;
+}
+
+abbr[title] {
+  border-bottom: 1px dotted;
+}
+
+b,
+strong {
+  font-weight: bold;
+}
+
+dfn {
+  font-style: italic;
+}
+
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+mark {
+  background: #ff0;
+  color: #000;
+}
+
+small {
+  font-size: 80%;
+}
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sup {
+  top: -0.5em;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+img {
+  border: 0;
+}
+
+svg:not(:root) {
+  overflow: hidden;
+}
+
+figure {
+  margin: 1em 40px;
+}
+
+hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  height: 0;
+}
+
+pre {
+  overflow: auto;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+
+button {
+  overflow: visible;
+}
+
+button,
+select {
+  text-transform: none;
+}
+
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+
+button[disabled],
+html input[disabled] {
+  cursor: default;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+input {
+  line-height: normal;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+input[type="search"] {
+  -webkit-appearance: textfield;
+  /* 1 */
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  /* 2 */
+  box-sizing: content-box;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+fieldset {
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em;
+}
+
+legend {
+  border: 0;
+  /* 1 */
+  padding: 0;
+  /* 2 */
+}
+
+textarea {
+  overflow: auto;
+}
+
+optgroup {
+  font-weight: bold;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+td,
+th {
+  padding: 0;
+}
+
+html {
+  color: #222;
+  font-size: 16;
+  line-height: 1.4;
+}
+
+::-moz-selection {
+  background: #b3d4fc;
+  text-shadow: none;
+}
+
+::selection {
+  background: #b3d4fc;
+  text-shadow: none;
+}
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
+}
+
+audio,
+canvas,
+iframe,
+img,
+svg,
+video {
+  vertical-align: middle;
+}
+
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.hidden {
+  display: none !important;
+  visibility: hidden;
+}
+
+.visuallyhidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus {
+  clip: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  position: static;
+  width: auto;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.clearfix:before, .clearfix:after {
+  content: " ";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+}
+
+@media print {
+  *,
+  *:before,
+  *:after {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+
+  abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
+
+  a[href^="#"]:after,
+  a[href^="javascript:"]:after {
+    content: "";
+  }
+
+  pre,
+  blockquote {
+    border: 1px solid #999;
+    page-break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr,
+  img {
+    page-break-inside: avoid;
+  }
+
+  img {
+    max-width: 100% !important;
+  }
+
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+}
+/**
+ * Blocks.
+ * */
+/**
+ * Elements.
+ * */
+/**
+ * Modules
+ * */
+/**
+ * @file _typography.scss
+ *
+ * Global styles.
+ * */
+html {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  font-feature-settings: "kern";
+  -webkit-font-feature-settings: "kern";
+  -moz-font-feature-settings: "kern";
+  -moz-font-feature-settings: "kern=1";
+  text-rendering: optimizeLegibility;
+}
+
+body,
+p,
+span,
+td,
+li {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+body,
+p,
+td,
+li {
+  font-size: 16px;
+}
+
+h1 {
+  font-size: 4.5rem;
+  line-height: 1em;
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a:link, a:visited {
+  border-bottom: none;
+  text-decoration: underline;
+}
+a:hover {
+  text-decoration: none;
+}
+a:active {
+  border-bottom: none;
+  text-decoration: underline;
+}
+
+/**
+ * Style classes
+ * */
+.hide_text {
+  text-indent: -119988px;
+  overflow: hidden;
+  text-align: left;
+  text-transform: capitalize;
+}
+
+.antialiased {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.text-centered {
+  text-align: center;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  -moz-binding: url('/css/xml/ellipsis.xml#ellipsis');
+}
+
+/**
+ * Pages.
+ * */

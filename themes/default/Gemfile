@@ -1,0 +1,8 @@
+source "https://rubygems.org"
+
+gem 'compass', '1.0.3'
+gem 'sass', '3.4.13'
+gem 'susy', '2.2.2'
+gem 'compass-h5bp', '1.0.0'
+gem 'breakpoint'
+gem 'oily_png'

@@ -1,0 +1,30 @@
+{
+  "name": "default",
+  "version": "1.0.0",
+  "authors": [
+    "Simon Winter <simon@saltedherring.com>"
+  ],
+  "private": true,
+  "description": "Base SS dependencies",
+  "main": "./",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "js/components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "imagesloaded": "~3.1.0",
+    "infinite-scroll": "*",
+    "jquery-easing": "*",
+    "jquery-placeholder": "~2.0.7",
+    "jquery.uniform": "~2.1.2",
+    "masonry": "~3.1.2",
+    "zepto": "~1.0.0",
+    "gsap": "^1.18.2",
+    "salted-js": "*"
+  }
+}

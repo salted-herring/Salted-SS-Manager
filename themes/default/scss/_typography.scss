@@ -1,0 +1,94 @@
+/**
+ * @file _typography.scss
+ *
+ * Global styles.
+ * */
+
+html {
+    @include box-sizing(border-box);
+    @include font-smoothing;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    @include kerning;
+    text-rendering: optimizeLegibility;
+}
+
+body,
+p,
+span,
+td,
+li {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+body,
+p,
+td,
+li {
+    font-size: ($font-size)+px;
+}
+
+h1 {
+    font-size: rem(72);
+    line-height: 1em;
+    margin: 0;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    &:link,
+    &:visited {
+        border-bottom: none;
+        text-decoration: underline;
+    }
+
+    &:hover {
+        text-decoration: none;
+    }
+
+    &:active {
+        border-bottom: none;
+        text-decoration: underline;
+    }
+}
+
+/**
+ * Style classes
+ * */
+.hide_text {
+    @include hide_text;
+}
+
+.antialiased {
+    @include font-smoothing;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.text-centered {
+    text-align: center;
+}
+
+// Since you've installed the xml file, you should set
+// $use-mozilla-ellipsis-binding to true before importing.
+$use-mozilla-ellipsis-binding: true;
+@import "compass/typography/text/ellipsis";
+
+// You can delete this sass file if you want, it's just an example of how to use the ellipsis mixin.
+// By default, ellipsis text is no-wrap. Pass false as the first argument if you don't want that.
+.ellipsis {
+    @include ellipsis;
+}

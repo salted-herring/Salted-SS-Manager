@@ -1,0 +1,34 @@
+---
+Name: mainsite
+After: 'framework/*','cms/*'
+---
+# YAML configuration for SilverStripe
+# See http://doc.silverstripe.org/framework/en/topics/configuration
+# Caution: Indentation through two spaces, not tabs
+SiteVersion:
+  version: 1.0
+SSViewer:
+  theme: 'default'
+Page:
+  extensions:
+    - OpenGraphExtension
+    - TwitterCardExtension
+    - SeoObjectExtension
+    - SEOExtension
+SiteConfig:
+  extensions:
+    - CustomSiteConfig
+    - OpenGraphExtension
+    - TwitterCardExtension
+Page_Controller:
+  extensions:
+    - PageControllerDecorator
+ModelAdmin:
+  extensions:
+    - ModelAdminExtension
+
+SeoConfig:
+    Page: true
+    ErrorPage: false
+    RedirectorPage: false
+    VirtualPage: false
