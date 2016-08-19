@@ -40,14 +40,20 @@ class SSHConnector {
         if (empty($this->ssh_auth_pub) || empty($this->ssh_auth_priv)) {
 	        if( !ssh2_auth_password( $this->connection, $this->ssh_auth_user, $this->ssh_auth_pass ) ) {
 		       throw new Exception('Autentication rejected by server'); 
-	    	} 
+	    	}
+
 	    } else {
  	       if (!ssh2_auth_pubkey_file($this->connection, $this->ssh_auth_user, $this->ssh_auth_pub, $this->ssh_auth_priv, $this->ssh_auth_pass)) { 
     	        throw new Exception('Autentication rejected by server'); 
         	}
         }
+
+        return $this->connection;
     } 
-    public function exec($cmd) { 
+    public function exec($cmd, $detailed_feedback = false) {
+        if (empty($this->connection)) {
+            return false;
+        }
         if (!($stream = ssh2_exec($this->connection, $cmd))) { 
             throw new Exception('SSH command failed'); 
         }
@@ -60,12 +66,18 @@ class SSHConnector {
             $data .= $buf; 
         }*/
 		$data = stream_get_contents($stream);
-		if (!empty($errstr)) {
-			$data .= stream_get_contents($errstr); 
+        $errData = stream_get_contents($errstr);
+		if (!empty($errData)) {
+			$data .= $errData;
 		}
         fclose($stream); 
 		fclose($errstr);
-        return $data; 
+
+        if ($detailed_feedback) {
+            return $data; 
+        }
+        
+        return !empty($errData) ? false : true;
     } 
     public function disconnect() { 
         $this->exec('echo "EXITING" && exit;'); 

@@ -27,7 +27,8 @@ class Environment extends DataObject {
 	);
 	
 	protected static $many_many = array(
-		'Server'				=>	'Server'
+		'Server'				=>	'Server',
+		'Repo'					=>	'Repo'
 	);
 	
 	protected static $extensions = array(

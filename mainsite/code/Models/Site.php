@@ -1,4 +1,4 @@
-<?php
+<?php use SaltedHerring\Grid as Grid;
 
 class Site extends DataObject {
 	protected static $db = array(
@@ -19,8 +19,29 @@ class Site extends DataObject {
 	);
 
 	protected static $has_many = array(
+		'Repos'			=>	'Repo',
 		'Environments'	=>	'Environment',
 		'Servers'		=>	'Server',
 		'Deployments'	=>	'Deployment'
 	);
+
+	public function getCMSFields() {
+		$fields = parent::getCMSFields();
+
+		
+		if (!empty($this->ID)) {
+			$fields->addFieldToTab(
+				'Root.Environments',
+				$grid = Grid::make('Environments', 'Environments', $this->Environments(), false, 'GridFieldConfig_RelationEditor')
+			);
+
+			$grid->getConfig()
+                 ->removeComponentsByType('GridFieldDetailForm')
+                 ->addComponents(
+                    new EnvironmentDetailsForm()
+                 );
+		}
+
+		return $fields;
+	}
 }
