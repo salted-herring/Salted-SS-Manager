@@ -6,6 +6,7 @@ class Server extends DataObject {
 		'ServerAddress'		=>	'Varchar(256)',
 		'Port'				=>	'Int',
 		'FingerPrint'		=>	'Text',
+		'wwwUser'			=>	'Varchar(128)',
 		'DeployUser'		=>	'Varchar(256)',
 		'DeployPass'		=>	'Varchar(256)',
 		'RequireSudo'		=>	'Boolean'

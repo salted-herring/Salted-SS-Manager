@@ -39,7 +39,9 @@ class Deployment extends DataObject {
 			$pass = $env->DBPass;
 			
 			if ($server = $env->Server()->first()) {
-				$cmd .= $this->DumpDB($sqlfolder, Utilities::sanitiseClassName($env->Title), $host, $table, $user, $pass, $server->RequireSudo ? $server->DeployPass : null);
+				//$repo_dir, $branch, $root, $www_user, $sudo = null, $updateComposer = false, $updateBower = false
+				//$cmd = DeployScripts::Deploy($env->Directory);
+				//$cmd .= $this->DumpDB($sqlfolder, Utilities::sanitiseClassName($env->Title), $host, $table, $user, $pass, $server->RequireSudo ? $server->DeployPass : null);
 				$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
 				$ssh->connect();
 				

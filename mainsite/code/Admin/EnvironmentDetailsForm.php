@@ -7,6 +7,9 @@ class EnvironmentDetailsForm extends GridFieldDetailForm {
 }
 
 class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest {
+
+	private $repo_ready = false;
+
 	private static $allowed_actions = array(
 		'edit',
 		'view',
@@ -29,6 +32,8 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 				$postback = $ssh->exec($cmd);
 				if (!$postback) {
 					$label = 'Setup Repo';
+				} else {
+					$this->repo_ready = true;
 				}
 				$actions->push(FormAction::create('SetupRepo', $label));
 			}
@@ -48,24 +53,30 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 		if (!empty($server) && !empty($repo)) {
 			$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
 			$ssh->connect();
-			$cmd = DeployScripts::RepoInit($repo->RepoDirPath, $repo->Repo, 'develop');
+			
+			$sudo = array();
 			if ($server->RequireSudo) {
-				$cmds = explode(';', rtrim($cmd, ';'));
-				foreach ($cmds as &$line) {
-					if (!SaltedHerring\Utilities::startsWith($line, 'cd ')) {
-						$line = DeployScripts::sudo($server->DeployPass) . $line;
-					}
-				}
-
-				$cmd = implode(';', $cmds) . ';';
+				$sudo['user'] = $server->DeployUser;
+				$sudo['pass'] = $server->DeployPass;
 			}
 
+			$cmd = DeployScripts::RepoInit($repo->RepoDirPath, $repo->Repo, 'develop', $sudo);
+
+			if ($this->repo_ready) {
+				$cmd = DeployScripts::rm($repo->RepoDirPath, $server->DeployPass) . $cmd;
+			}
+
+			//Debugger::inspect($cmd);
+
 			$postback = $ssh->exec($cmd, true);
-			Debugger::inspect($postback);
+			if ($postback) {
+				$form->sessionMessage('Repo created', 'good', false);
+			} else {
+				$form->sessionMessage('Fail to create repo', 'bad', false);
+			}
 			//$ssh->disconnect();
 		}
-
-		$form->sessionMessage('Block published', 'good', false);
+		
 		$controller = Controller::curr();
 		return $this->edit($controller->getRequest());
 	}
