@@ -8,7 +8,8 @@ class CustomSiteConfig extends DataExtension {
 		'GoogleCustomCode'				=>	'HTMLText',
 		'ContactNumber'					=>	'Varchar(32)',
 		'Email'							=>	'Varchar(254)',
-		'Address'						=>	'Text'
+		'Address'						=>	'Text',
+		'DeploymentScript'				=>	'Text'
 	);
 	
 	public function updateCMSFields(FieldList $fields) {	
@@ -24,6 +25,8 @@ class CustomSiteConfig extends DataExtension {
 		$fields->addFieldToTab("Root.Google", new TextField('GoogleSiteVerificationCode', 'Google Site Verification Code'));
 		$fields->addFieldToTab("Root.Google", new TextField('GoogleAnalyticsCode', 'Google Analytics Code'));
 		$fields->addFieldToTab("Root.Google", new TextareaField('GoogleCustomCode', 'Custom Google Code'));
+
+		$fields->addFieldToTab("Root.DeploymentScript", new TextareaField('DeploymentScript', 'Script Content'));
 		
 		$fields->addFieldToTab('Root.Main', new TextField('SiteVersion', 'Site Version'));
 	}

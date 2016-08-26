@@ -23,7 +23,8 @@ class Environment extends DataObject {
 	);
 
 	protected static $has_one = array(
-		'Site'					=>	'Site'
+		'Site'					=>	'Site',
+		'htaccess'				=>	'HtAccess'
 	);
 	
 	protected static $many_many = array(

@@ -14,6 +14,10 @@ class Deployment extends DataObject {
 	protected static $has_one = array(
 		'Site'				=>	'Site'
 	);
+
+	protected static $has_many = array(
+		'Logs'				=>	'DeployLog'
+	);
 	
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
@@ -26,10 +30,10 @@ class Deployment extends DataObject {
 			);
 		}
 
-		if ($msg = Session::get('Message')) {
+		/*if ($msg = Session::get('Message')) {
 			$fields->addFieldToTab('Root.Main', LiteralField::create('message', '<div class="deployment-msg">'.$msg['Message'].'</div>'));
 			Session::clear('Message');
-		}
+		}*/
 
 		return $fields;
 	}
@@ -51,15 +55,21 @@ class Deployment extends DataObject {
 					$cmd = DeployScripts::Deploy($site, $env, $server, $this->ComposerUpdate, $this->BowerUpdate);
 				}
 
+				//Debugger::inspect($cmd);
 				$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
 				$ssh->connect();
 				$msg = $ssh->exec($cmd, true);
 				$msg = str_replace("\n", '<br />', $msg);
 			}
 
-			Session::set('Message', array(
+			/*Session::set('Message', array(
 	            'Message' => $msg
-	        ));
+	        ));*/
+
+	        $log = new DeployLog();
+	        $log->Content = $msg;
+	        $log->DeploymentID = $this->ID;
+	        $log->write();
 		}	
 	}
 	

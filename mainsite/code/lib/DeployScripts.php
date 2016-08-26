@@ -70,6 +70,8 @@ class DeployScripts {
 		$root = $environment->Directory;
 		$www_user = $server->wwwUser;
 
+		$htaccess = !empty($environment->htaccessID) ? $environment->htaccess()->Content : null;
+
 		$cmd = 'cd ' . $repo_dir . ';';
 		$cmd .= self::RepoUpdate($branch, $sudo, $updateComposer, $updateBower);
 		$cmd .= self::DumpDB($db_dir, $branch, $site->Title, $db_host, $db_table, $db_user, $db_pass, $server->DeployUser, $sudo);
@@ -101,11 +103,17 @@ class DeployScripts {
 		if (!empty($sudo)) {
 			$cmd .= self::sudo($sudo['pass']);
 		}
-		$cmd .= self::sake();
-		if (!empty($sudo)) {
-			$cmd .= self::sudo($sudo['pass']);
-		}
 		$cmd .= self::rm('.git*');
+
+		if (!empty($htaccess)) {
+			if (!empty($sudo)) {
+				$cmd .= self::sudo($sudo['pass']);
+			}
+			$cmd .= self::rm('.htaccess');
+			
+			$htaccess = str_replace('"', '\"', $htaccess);
+			$cmd .= self::writefile($htaccess, '.htaccess', $sudo);
+		}
 
 		$cmd .= 'cd ..;';
 		if (!empty($sudo)) {
@@ -127,9 +135,33 @@ class DeployScripts {
 			$cmd .= self::sudo($sudo['pass']);
 		}
 		$cmd .= self::chown($www_user, $root);
-
+		$cmd .= 'cd ' . $root . ';';
+		if (!empty($sudo)) {
+			$cmd .= self::sudo($sudo['pass']);
+		}
+		$cmd .= self::sake();
 
 		return $cmd;
+	}
+
+	public static function writefile($content, $filename, $sudo = null) {
+		$contents = explode("\n", $content);
+		$cmd = '';
+		$n = 0;
+		foreach ($contents as $line) {
+			if (!empty($sudo)) {
+				$cmd .= self::sudo($sudo['pass']);
+			}
+			if ($n == 0) {
+				$cmd .= 'echo "' . trim($line) . '" > ' . $filename . ';';
+			} else {
+				$cmd .= 'echo "' . trim($line) . '" >> ' . $filename . ';';
+			}
+			$n++;
+		}
+
+		return $cmd;
+
 	}
 
 	public static function RepoUpdate($branch, $sudo = null, $updateComposer = false, $updateBower = false) {

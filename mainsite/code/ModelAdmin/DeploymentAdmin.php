@@ -1,6 +1,6 @@
 <?php
 class DeploymentAdmin extends ModelAdmin {
-   private static $managed_models = array('Site', 'Server');
+   private static $managed_models = array('Site', 'HtAccess', 'Server');
    static $url_segment = 'deploy-management';
    static $menu_title = 'Deploy Management';
 
