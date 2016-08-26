@@ -60,7 +60,7 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 				$sudo['pass'] = $server->DeployPass;
 			}
 
-			$cmd = DeployScripts::RepoInit($repo->RepoDirPath, $repo->Repo, 'develop', $sudo);
+			$cmd = DeployScripts::RepoInit($repo->RepoDirPath, $repo->Repo, 'master', $sudo);
 
 			if ($this->repo_ready) {
 				$cmd = DeployScripts::rm($repo->RepoDirPath, $server->DeployPass) . $cmd;

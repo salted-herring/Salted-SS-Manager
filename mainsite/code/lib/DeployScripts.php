@@ -1,5 +1,6 @@
 <?php
-
+use SaltedHerring\Debugger as Debugger;
+use SaltedHerring\Utilities as Utilities;
 class DeployScripts {
 
 	public static function sudo($pass) {
@@ -32,45 +33,101 @@ class DeployScripts {
 		return $cmd;
 	}
 
-	public static function Deploy($repo_dir, $branch, $root, $www_user, $sudo = null, $updateComposer = false, $updateBower = false) {
+	public static function DumpDB($path, $env, $site_name, $host, $table, $user, $pass, $deploy_user, $sudo = null) {
+		if (!empty($sudo)) {
+			$cmd = self::sudo($sudo['pass']);
+			$cmd .= 'mkdir -p ' . $path . ';';
+		} else {
+			$cmd = 'mkdir -p ' . $path . ';';
+		}
+		if (!empty($sudo)) {
+			$cmd .= self::sudo($sudo['pass']);
+		}
+		$cmd .= self::chown($deploy_user, $path);
+
+		$cmd .= 'mysqldump -h ' . $host . ' -u ' . $user . ' -p\''. $pass .'\' ' . $table . ' > ' . $path . '/' . $env . '_' . Utilities::sanitiseClassName($site_name) . '-$(date "+%b_%d_%Y_%H_%M_%S").sql;';
+		return $cmd;
+	}
+
+	public static function sake() {
+		return 'sake dev/build;';
+	}
+
+	public static function Deploy($site, $environment, $server, $updateComposer = false, $updateBower = false) {
+
+		$sudo = array();
+		if ($server->RequireSudo) {
+			$sudo['user'] = $server->DeployUser;
+			$sudo['pass'] = $server->DeployPass;
+		}
+		$branch = $environment->BoundBranch;
+		$repo_dir = $environment->Repo()->first()->RepoDirPath;
+		$db_dir = rtrim($environment->EnvironmentDirectory, '/')  . '/' . $site->SqlDumpDirectory;
+		$db_host = $environment->DBServer;
+		$db_table = $environment->DBName;
+		$db_user = $environment->DBUser;
+		$db_pass = $environment->DBPass;
+		$root = $environment->Directory;
+		$www_user = $server->wwwUser;
+
 		$cmd = 'cd ' . $repo_dir . ';';
-		$cmd .= self::RepoUpdate($branch, $updateComposer, $updateBower);
+		$cmd .= self::RepoUpdate($branch, $sudo, $updateComposer, $updateBower);
+		$cmd .= self::DumpDB($db_dir, $branch, $site->Title, $db_host, $db_table, $db_user, $db_pass, $server->DeployUser, $sudo);
 
-		$repo_segments = explode('/', rtrim($repo_dir,'/'));
-		$repo_segments = array_pop($repo_segments);
-		$parent_dir = implode('/', $repo_segments);
-
-		$cmd .= 'cd ' . $parent_dir . ';';
+		$cmd .= 'cd ' . $environment->EnvironmentDirectory . ';';
 
 		if (!empty($sudo)) {
 			$cmd .= self::sudo($sudo['pass']);
 		}
-		$cmd .= self::cp($repo_dir, $root . '_new');
+		$cmd .= 'mkdir -p ' . $root . '_versions;';
+
+		$ver = $root . '_versions/' . $root . '_' . date("Y_m_d_H_i_s"); /////////////////// make folder name
+
 		if (!empty($sudo)) {
 			$cmd .= self::sudo($sudo['pass']);
 		}
-		$cmd .= self::rm($root . '_old');
+		$cmd .= self::cp($repo_dir, $ver);
+		$cmd .= 'cd ' . $ver . ';';
 		if (!empty($sudo)) {
 			$cmd .= self::sudo($sudo['pass']);
 		}
-		$cmd .= self::mv($root, $root . '_old');
+		$cmd .= 'rm -rf assets;';
+
 		if (!empty($sudo)) {
 			$cmd .= self::sudo($sudo['pass']);
 		}
-		$cmd .= self::mv($root . '_new', $root);
-		$cmd .= 'cd ' . $root . ';';
+		$cmd .= 'ln -s ../../assets .;';
+
 		if (!empty($sudo)) {
 			$cmd .= self::sudo($sudo['pass']);
 		}
-		$cmd .= 'ln -s ../assets .;';
+		$cmd .= self::sake();
 		if (!empty($sudo)) {
 			$cmd .= self::sudo($sudo['pass']);
 		}
 		$cmd .= self::rm('.git*');
+
+		$cmd .= 'cd ..;';
+		if (!empty($sudo)) {
+			$cmd .= self::sudo($sudo['pass']);
+		}
+		$cmd .= self::chown($www_user, $environment->EnvironmentDirectory . '/' . $ver);
+
+		$cmd .= 'cd ' . $environment->EnvironmentDirectory . ';';
+		if (!empty($sudo)) {
+			$cmd .= self::sudo($sudo['pass']);
+		}
+		$cmd .= self::rm($root, $sudo);
+		if (!empty($sudo)) {
+			$cmd .= self::sudo($sudo['pass']);
+		}
+		$cmd .= 'ln -s ' . $ver . ' ' . $root . ';';
+
 		if (!empty($sudo)) {
 			$cmd .= self::sudo($sudo['pass']);
 		}
 		$cmd .= self::chown($www_user, $root);
+
 
 		return $cmd;
 	}

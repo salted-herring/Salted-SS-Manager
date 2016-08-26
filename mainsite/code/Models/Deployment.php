@@ -25,6 +25,12 @@ class Deployment extends DataObject {
 				'SiteID'
 			);
 		}
+
+		if ($msg = Session::get('Message')) {
+			$fields->addFieldToTab('Root.Main', LiteralField::create('message', '<div class="deployment-msg">'.$msg['Message'].'</div>'));
+			Session::clear('Message');
+		}
+
 		return $fields;
 	}
 	
@@ -32,31 +38,30 @@ class Deployment extends DataObject {
 		parent::onAfterWrite();
 		if ($env = Environment::get()->byID($this->Environment)) {
 			$cmd = '';
-			$sqlfolder = rtrim($env->EnvironmentDirectory, '/')  . '/' . $this->Site()->SqlDumpDirectory;
-			$host = $env->DBServer;
-			$table = $env->DBName;
-			$user = $env->DBUser;
-			$pass = $env->DBPass;
-			
+			$branch = $env->BoundBranch;
+			$repo = $env->Repo()->first();
+			$site = $env->Site();
+			$msg = '';
+
 			if ($server = $env->Server()->first()) {
-				//$repo_dir, $branch, $root, $www_user, $sudo = null, $updateComposer = false, $updateBower = false
-				//$cmd = DeployScripts::Deploy($env->Directory);
-				//$cmd .= $this->DumpDB($sqlfolder, Utilities::sanitiseClassName($env->Title), $host, $table, $user, $pass, $server->RequireSudo ? $server->DeployPass : null);
+				if ($this->DeployType == 'Repo Sync') {
+					$cmd = DeployScripts::updateRepo($repo->RepoDirPath, $branch, $this->ComposerUpdate, $this->BowerUpdate);
+
+				} else {
+					$cmd = DeployScripts::Deploy($site, $env, $server, $this->ComposerUpdate, $this->BowerUpdate);
+				}
+
 				$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
 				$ssh->connect();
-				
-				$postback = $ssh->exec($cmd);
-				Debugger::inspect($postback);
+				$msg = $ssh->exec($cmd, true);
+				$msg = str_replace("\n", '<br />', $msg);
 			}
+
+			Session::set('Message', array(
+	            'Message' => $msg
+	        ));
 		}	
 	}
 	
-	private function DumpDB($path, $env, $host, $table, $user, $pass, $sudo_pass = null) {
-		$prefix = !empty($sudo_pass) ? ("echo '" . $sudo_pass . "' | sudo -S ") : '';
-		$cmd = $prefix . 'mkdir -p ' . $path . ';';
-		$cmd .= $prefix . 'chmod -R 777 ' . $path . ';';
-		$cmd .= $prefix . 'mysqldump -h ' . $host . ' -u ' . $user . ' -p\''. $pass .'\' ' . $table . ' > ' . $path . '/' . $env . '_' . Utilities::sanitiseClassName($this->Site()->Title) . '-$(date "+%b_%d_%Y_%H_%M_%S").sql;';
-		//Debugger::inspect($cmd);
-		return $cmd;
-	}
+	
 }

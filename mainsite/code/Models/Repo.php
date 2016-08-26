@@ -34,12 +34,12 @@ class Repo extends DataObject {
 		$fields = parent::getCMSFields();
 
 		if (!empty($this->SiteID) && (empty($this->Repo) || empty($this->RepoDirPath))) {
-			if (empty($this->Repo)) {
+			if (empty($this->Repo) && !empty($this->Site()->Repos()->count())) {
 				$Repo = $this->Site()->Repos()->sort(array('ID' => 'ASC'))->first()->Repo;
 				$fields->fieldByName('Root.Main.Repo')->setValue($Repo);
 			}
 
-			if (empty($this->RepoDirPath)) {
+			if (empty($this->RepoDirPath) && !empty($this->Site()->Repos()->count())) {
 				$RepoDirPath = $this->Site()->Repos()->sort(array('ID' => 'ASC'))->first()->RepoDirPath;
 				$fields->fieldByName('Root.Main.RepoDirPath')->setValue($RepoDirPath);
 			}

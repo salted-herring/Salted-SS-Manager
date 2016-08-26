@@ -59,14 +59,5 @@ class Environment extends DataObject {
 			$this->DBUser		=	empty($this->DBUser) ? $this->Site()->DBUser : $this->DBUser;
 			$this->DBPass		=	empty($this->DBPass) ? $this->Site()->DBPass : $this->DBPass;
 		}
-
-		//$host, $port, $server_fp, $user, $pass
-		/*if ($server = $this->Server()->first()) {
-			$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
-			$ssh->connect();
-			$postback = $ssh->exec('cd ' . $this->EnvironmentDirectory . '; ls -al;');
-			Debugger::inspect($postback);
-			$ssh->disconnect();
-		}*/
 	}
 }
