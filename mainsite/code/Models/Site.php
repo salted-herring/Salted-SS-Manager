@@ -1,4 +1,5 @@
 <?php use SaltedHerring\Grid as Grid;
+use Saltedherring\Debugger as Debugger;
 
 class Site extends DataObject {
 	protected static $db = array(
@@ -27,7 +28,6 @@ class Site extends DataObject {
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
-
 		
 		if (!empty($this->ID)) {
 			$fields->addFieldToTab(

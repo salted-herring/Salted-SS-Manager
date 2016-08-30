@@ -26,6 +26,8 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 			$repo = $record->Repo()->first();
 			if (!empty($server) && !empty($repo)) {
 				$label = 'Re-setup Repo';
+				$label_script = 'Create Deployment script';
+
 				$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
 				$con = $ssh->connect();
 				$cmd = DeployScripts::repoExists($repo->RepoDirPath);
@@ -35,14 +37,41 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 				} else {
 					$this->repo_ready = true;
 				}
-				$actions->push(FormAction::create('SetupRepo', $label));
-			}
 
-			
+				$actions->push(FormAction::create('SetupRepo', $label));
+				$actions->push(FormAction::create('CreateScripts', $label_script));
+			}
 			
 			$form->setActions($actions);
 		}
 		return $form;
+	}
+
+	public function CreateScripts($data, $form) {
+		$record = $this->Record;
+		$server = $record->Server()->first();
+		if ($server->RequireSudo) {
+			$sudo = array('user' => $server->DeployUser, 'pass' => $server->DeployPass);
+		}
+		$script = Director::baseFolder() . '/script-template.sh';
+		$script = file_get_contents($script);
+		$script = $this->processScript($script, $record);
+		$cmd = DeployScripts::sudo($server->DeployPass);
+		$cmd .= DeployScripts::rm($record->EnvironmentDirectory . '/deploy-script.sh', !empty($sudo) ? $server->DeployPass : null);
+		$cmd .= DeployScripts::writefile($script, $record->EnvironmentDirectory . '/deploy-script.sh', empty($sudo) ? null : $sudo);
+
+		$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
+		$ssh->connect();
+		$postback = $ssh->exec($cmd, true);
+		//Debugger::inspect($postback);
+		if ($postback) {
+			$form->sessionMessage('Script created', 'good', false);
+		} else {
+			$form->sessionMessage('Fail to create Script', 'bad', false);
+		}
+
+		$controller = Controller::curr();
+		return $this->edit($controller->getRequest());
 	}
 
 	public function SetupRepo($data, $form) {
@@ -69,6 +98,7 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 			//Debugger::inspect($cmd);
 
 			$postback = $ssh->exec($cmd, true);
+			//Debugger::inspect($postback);
 			if ($postback) {
 				$form->sessionMessage('Repo created', 'good', false);
 			} else {
@@ -81,17 +111,42 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 		return $this->edit($controller->getRequest());
 	}
 
-	//, $server->RequireSudo ? $server->DeployPass : null
-	
-}
+	private function processScript($script, $environment) {
+		$script = str_replace('"', '\"', $script);
+		//$script = str_replace('%', '\%', $script);
 
-/*
-echo 'Toh8haisav' | sudo -S mkdir -p /var/www/staging.umbrellar.com/gitpo;
-echo 'Toh8haisav' | sudo -S cd /var/www/staging.umbrellar.com/gitpo;
-echo 'Toh8haisav' | sudo -S git init;echo 'Toh8haisav' | sudo -S git remote add origin git@github.com:salted-herring/umbrellar.git;
-echo 'Toh8haisav' | sudo -S git fetch --all;
-echo 'Toh8haisav' | sudo -S git checkout develop;
-echo 'Toh8haisav' | sudo -S composer update;
-echo 'Toh8haisav' | sudo -S cd themes/default;
-echo 'Toh8haisav' | sudo -S bower update;
-*/
+		$site = $environment->Site();
+		$repo = $environment->Repo()->first();
+		$server = $environment->Server()->first();
+
+		$env_dir = $environment->EnvironmentDirectory;
+		$root_dir = $environment->Directory;
+		$sql_dir = $site->SqlDumpDirectory;
+		$repo_dir = $repo->RepoDirPath;
+		$versions_dir = $env_dir . '/' . $root_dir . '_versions';
+		$sql_host = $environment->DBServer;
+		$sql_table = $environment->DBName;
+		$sql_user = $environment->DBUser;
+		$sql_pass = $environment->DBPass;
+		$www_user = $server->wwwUser;
+
+		$script = str_replace('$REP_SITE_ROOT', $env_dir, $script);
+		$script = str_replace('$REP_HTDOCS_DIR', $root_dir, $script);
+		$script = str_replace('$REP_SQL_DIR', $sql_dir, $script);
+		$script = str_replace('$REP_REPO_DIR', $repo_dir, $script);
+		$script = str_replace('$REP_VERSIONS_DIR', $versions_dir, $script);
+		$script = str_replace('$REP_MYSQL_HOST', $sql_host, $script);
+		$script = str_replace('$REP_MYSQL_USER', $sql_user, $script);
+		$script = str_replace('$REP_MYSQL_PASS', $sql_pass, $script);
+		$script = str_replace('$REP_MYSQL_TABLE', $sql_table, $script);
+		$script = str_replace('$REP_WWWUSER', $www_user, $script);
+
+		if ($server->RequireSudo) {
+			$script = str_replace('#root_required ', '', $script);
+		}
+
+		$script = str_replace('$', '\$', $script);
+
+		return $script;
+	}
+}

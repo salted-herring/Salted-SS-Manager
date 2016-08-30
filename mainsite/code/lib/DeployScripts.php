@@ -112,6 +112,8 @@ class DeployScripts {
 			$cmd .= self::rm('.htaccess');
 			
 			$htaccess = str_replace('"', '\"', $htaccess);
+			$htaccess = str_replace('$', '\$', $htaccess);
+			$htaccess = str_replace("'", "\'", $htaccess);
 			$cmd .= self::writefile($htaccess, '.htaccess', $sudo);
 		}
 
