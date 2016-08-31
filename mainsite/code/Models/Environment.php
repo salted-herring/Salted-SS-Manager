@@ -5,7 +5,7 @@ class Environment extends DataObject {
 		'Title'					=>	'Varchar(48)',
 		'EnvironmentDirectory'	=>	'Text',
 		'Directory'				=>	'Varchar(256)',
-		'BoundBranch'			=>	'Varchar(256)'		
+		'BoundBranch'			=>	'Varchar(256)'
 	);
 	
 	protected static $defaults = array(
@@ -25,6 +25,10 @@ class Environment extends DataObject {
 	protected static $has_one = array(
 		'Site'					=>	'Site',
 		'htaccess'				=>	'HtAccess'
+	);
+
+	protected static $has_many = array(
+		'AssetsAndDatabase'		=>	'File'
 	);
 	
 	protected static $many_many = array(
@@ -48,6 +52,45 @@ class Environment extends DataObject {
 		if (!empty($this->SiteID)) {
 			$fields->addFieldsToTab('Root.Server', Grid::make('Server', 'Server', $this->Server(), false, 'GridFieldConfig_RelationEditor'));
 		}
+
+		$server = $this->Server();
+
+		if ($server->count() > 0) {
+
+			$server = $server->first();
+
+
+			$enviro = array(
+				'id'			=>	$this->ID,
+				'name'			=>	$this->Title,
+				'path'			=>	$this->EnvironmentDirectory,
+				'web_root'		=>	$this->Directory,
+				'branch'		=>	$this->BoundBranch,
+				'sql_host'		=>	$this->DBServer,
+				'sql_table'		=>	$this->DBName,
+				'sql_user'		=>	$this->DBUser,
+				'sql_pass'		=>	$this->DBPass,
+				'server_addr'	=>	$server->ServerAddress,
+				'server_user'	=>	$server->DeployUser,
+				'server_pass'	=>	$server->DeployPass
+			);
+
+			$fields->addFieldsToTab(
+				'Root.Main', 
+				LiteralField::create(
+					'EnvironmentScript', 
+					"<script type=\"text/javascript\">var environment = ". json_encode($enviro) .";</script>"
+				)
+			);
+		}
+
+		Requirements::combine_files(
+            'socket.js',
+            array(
+                'themes/default/js/socket.io.js',
+                'mainsite/js/cms.scripts.js'
+			)
+		);
 
 		return $fields;
 	}

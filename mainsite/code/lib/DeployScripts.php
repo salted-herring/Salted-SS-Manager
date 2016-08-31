@@ -33,7 +33,7 @@ class DeployScripts {
 		return $cmd;
 	}
 
-	public static function DumpDB($path, $env, $site_name, $host, $table, $user, $pass, $deploy_user, $sudo = null) {
+	public static function DumpDB($path, $env, $site_name, $host, $table, $user, $pass, $deploy_user, $sudo = null, $cus_name = null) {
 		if (!empty($sudo)) {
 			$cmd = self::sudo($sudo['pass']);
 			$cmd .= 'mkdir -p ' . $path . ';';
@@ -44,8 +44,11 @@ class DeployScripts {
 			$cmd .= self::sudo($sudo['pass']);
 		}
 		$cmd .= self::chown($deploy_user, $path);
-
-		$cmd .= 'mysqldump -h ' . $host . ' -u ' . $user . ' -p\''. $pass .'\' ' . $table . ' > ' . $path . '/' . $env . '_' . Utilities::sanitiseClassName($site_name) . '-$(date "+%b_%d_%Y_%H_%M_%S").sql;';
+		if (empty($cus_name)) {
+			$cmd .= 'mysqldump -h ' . $host . ' -u ' . $user . ' -p\''. $pass .'\' ' . $table . ' > ' . $path . '/' . $env . '_' . Utilities::sanitiseClassName($site_name) . '-$(date "+%b_%d_%Y_%H_%M_%S").sql;';
+		} else {
+			$cmd .= 'mysqldump -h ' . $host . ' -u ' . $user . ' -p\''. $pass .'\' ' . $table . ' > ' . $path . '/' . $cus_name . ';';
+		}
 		return $cmd;
 	}
 
@@ -185,6 +188,18 @@ class DeployScripts {
 		}
 
 		return $cmd;
+	}
+
+	public static function scp($src, $dest, $pass = null) {
+		if (!empty($pass)) {
+			return "sshpass -p '" . $pass . "' scp " . $src . ' ' . $dest . ';';
+		}
+
+		return 'scp ' . $src . ' ' . $dest . ';';
+	}
+
+	public static function tar($environment_dir, $sql_path) {
+		return 'cd ' . $environment_dir . ';tar -zcvf ss_asset_db.tgz assets ' . $sql_path . ';';
 	}
 
 	public static function gitPull($remote = 'master', $local = 'origin') {

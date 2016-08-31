@@ -32,3 +32,6 @@ SeoConfig:
     ErrorPage: false
     RedirectorPage: false
     VirtualPage: false
+File:
+  extensions:
+    - FileExt

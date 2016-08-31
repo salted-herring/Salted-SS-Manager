@@ -1,6 +1,6 @@
 <?php
-
 use SaltedHerring\Debugger as Debugger;
+use SaltedHerring\Utilities as Utilities;
 
 class EnvironmentDetailsForm extends GridFieldDetailForm {
 	
@@ -26,7 +26,6 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 			$repo = $record->Repo()->first();
 			if (!empty($server) && !empty($repo)) {
 				$label = 'Re-setup Repo';
-				$label_script = 'Create Deployment script';
 
 				$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
 				$con = $ssh->connect();
@@ -39,12 +38,58 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 				}
 
 				$actions->push(FormAction::create('SetupRepo', $label));
-				$actions->push(FormAction::create('CreateScripts', $label_script));
+				$actions->push(FormAction::create('CreateScripts', 'Create Deployment script'));
+				$actions->push(FormAction::create('Backup', 'Backup'));
+				$actions->push(FormAction::create('test', 'test'));
 			}
 			
 			$form->setActions($actions);
 		}
 		return $form;
+	}
+
+	public function test($data, $form) {
+		
+	}
+
+	public function Backup($data, $form) {
+		$environment = $this->Record;
+		$server = $environment->Server()->first();
+		if ($server->RequireSudo) {
+			$sudo = array('user' => $server->DeployUser, 'pass' => $server->DeployPass);
+		}
+
+		$sql_path = $environment->Site()->SqlDumpDirectory;
+		$sql_fn = 'backup_dump.sql';
+		$cmd = DeployScripts::rm($environment->EnvironmentDirectory . '/ss_asset_db.tgz;', !empty($sudo) ? $sudo : null);
+		$cmd .= DeployScripts::DumpDB($sql_path, $environment->BoundBranch, $environment->Site()->Title, $environment->DBServer, $environment->DBName, $environment->DBUser, $environment->DBPass, $server->DeployUser, !empty($sudo) ? $sudo : null, $sql_fn);
+		$cmd .= DeployScripts::tar($environment->EnvironmentDirectory, $sql_path .'/' . $sql_fn);
+$folder = Folder::find_or_make(Utilities::sanitiseClassName($server->Site()->Title) . '/' . Utilities::sanitiseClassName($environment->Title));
+		
+		$remote = $server->DeployUser . '@' . $server->ServerAddress . ':' . $environment->EnvironmentDirectory . '/ss_asset_db.tgz';
+		$local = $folder->getFullPath() . date("Y_m_d_H_i_s") . '_ss_asset_db.tgz';
+
+		$local_cmd = DeployScripts::scp($remote, $local, $server->DeployPass);
+
+		Debugger::inspect($local_cmd);
+
+		$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
+		$ssh->connect();
+		$postback = $ssh->exec($cmd, true);
+
+		//Debugger::inspect($postback);
+		if ($postback) {
+			$form->sessionMessage('Assets and DB has been backed up', 'good', false);
+		} else {
+			$form->sessionMessage('Fail to backup', 'bad', false);
+		}
+
+
+		
+
+		$controller = Controller::curr();
+		return $this->edit($controller->getRequest());
+
 	}
 
 	public function CreateScripts($data, $form) {
