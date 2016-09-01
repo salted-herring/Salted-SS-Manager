@@ -49,7 +49,7 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 	}
 
 	public function test($data, $form) {
-		
+
 	}
 
 	public function Backup($data, $form) {
@@ -66,6 +66,8 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 		$cmd .= DeployScripts::tar($environment->EnvironmentDirectory, $sql_path .'/' . $sql_fn);
 $folder = Folder::find_or_make(Utilities::sanitiseClassName($server->Site()->Title) . '/' . Utilities::sanitiseClassName($environment->Title));
 		
+		Debugger::inspect($cmd);
+
 		$remote = $server->DeployUser . '@' . $server->ServerAddress . ':' . $environment->EnvironmentDirectory . '/ss_asset_db.tgz';
 		$local = $folder->getFullPath() . date("Y_m_d_H_i_s") . '_ss_asset_db.tgz';
 

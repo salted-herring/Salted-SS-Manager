@@ -66,6 +66,7 @@ class Environment extends DataObject {
 				'path'			=>	$this->EnvironmentDirectory,
 				'web_root'		=>	$this->Directory,
 				'branch'		=>	$this->BoundBranch,
+				'sql_dump_dir'	=>	$this->Site()->SqlDumpDirectory,
 				'sql_host'		=>	$this->DBServer,
 				'sql_table'		=>	$this->DBName,
 				'sql_user'		=>	$this->DBUser,
