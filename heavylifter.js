@@ -7,7 +7,7 @@ process.argv.forEach(function (val, index, array) {
 });
 */
 var _banches			=	[];
-var scp 				=	require('scp2');
+var scp 				=	require('scp2').Client;
 var ssh 				=	require('ssh2').Client;
 var scripts				=	require('./presetScripts.js');
 var banch 				=	function(id) {
@@ -32,8 +32,10 @@ var environment 		=	function(socket, environment) {
 	this.sql_user		=	environment.sql_user;
 	this.sql_pass		=	environment.sql_pass;
 	this.server_addr	=	environment.server_addr;
+	this.server_port	=	environment.server_port;
 	this.server_user	=	environment.server_user;
 	this.server_pass	=	environment.server_pass;
+	this.asset_dir		=	environment.asset_dir;
 	/*this.conn 			=	new ssh();
 	this.shell 			=	null;
 
@@ -69,15 +71,17 @@ var environment 		=	function(socket, environment) {
 		conn.on('ready', function() {
 			conn.exec(cmd ? cmd : 'uptime', function(err, stream) {
 			    if (err) throw err;
+			    var lastOutput = '';
 			    stream.on('close', function(code, signal) {
 			    	console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
 			     	conn.end();
+			     	if (onDone) {
+			    		onDone(lastOutput);
+			    	}
 			    }).on('data', function(data) {
 			    	console.log('STDOUT: ' + data);
-			    	_self.socket.emit('message', data.toString());
-			    	if (onDone) {
-			    		onDone();
-			    	}
+			    	lastOutput = data.toString();
+			    	_self.socket.emit('message', data.toString());			    	
 			    }).stderr.on('data', function(data) {
 			    	console.log('STDERR: ' + data);
 			    });
@@ -90,9 +94,9 @@ var environment 		=	function(socket, environment) {
 		});
 	};
 
+	this.download		=	function(src, dest) {
 
-	this.client 		=	function() {
-		var client 		=	new scp.Client({
+		var client 		=	new scp({
 								host: environment.server_addr,
 							    username: environment.server_user,
 							    password: environment.server_pass,
@@ -101,7 +105,7 @@ var environment 		=	function(socket, environment) {
 
 		client.on('error', function(err) {
 			trace('got event error', err);
-			socket.emit('message', err);
+			socket.emit('message', err.toString());
 		}).on('connect', function() { 
 			trace('connecting...');
 			socket.emit('message', 'connecting...');
@@ -116,16 +120,13 @@ var environment 		=	function(socket, environment) {
 			socket.emit('message', 'connection closed');
 		});
 
-		return client;
-	};
-
-	this.download		=	function(src, dest) {
-		var client 		=	new _self.client();
 		client.download(src, dest, function(err) {
 			if (err) {
-				socket.emit('message', err);
+				socket.emit('message', err.toString());
+				trace(err);
+			} else {
+				socket.emit('message', 'done transferring');
 			}
-
 			client.close();
 		});
 	};
@@ -166,15 +167,38 @@ io.on('connection', function (socket) {
 	socket.on('ssh', function(data) {
 		// trace('params from client:');
 		// trace(params);
-		trace('socket receive commnad');
 		var lcEnvironment	=	curSocket.environments[data.environment_id],
-			cmd 			=	cmdmaker(data.cmd,lcEnvironment);
-		lcEnvironment.run(cmd, function(){
-			/*if (data.cmd == 'backup') {
-				//src: '/home/saltydev/domains/dev-sh.saltydev.com/robots.txt', 
-				//dest: '/Users/leo/Sites/SDM/htdocs/assets/salted-herring/dev/robots.txt'
-				lcEnvironment.download()
-			}*/
+			cmd 			=	cmdmaker(data.cmd,lcEnvironment),
+			commondType		=	data.cmd;
+
+		var filename = 'ss_asset_db.tgz';
+		lcEnvironment.download(
+			'/home/saltydev/domains/dev-sh.saltydev.com/ss_asset_db.tgz',
+			lcEnvironment.asset_dir + '/' + Date.now() + '_' + filename
+		);
+		return;
+		lcEnvironment.run(cmd, function(data){
+			trace('packing done...');
+			if (commondType == 'backup') {
+				trace('checking realpath...');
+				var filename = 'ss_asset_db.tgz';
+				lcEnvironment.run('realpath ' + lcEnvironment.path + '/' + filename, function(remote_path) {
+					remote_path = remote_path.trim();
+					trace('remote: ' + remote_path);
+					trace('local: ' + lcEnvironment.asset_dir + '/' + Date.now() + '_' + filename);
+					//remote_path = '/home/saltydev/domains/dev-sh.saltydev.com/ss_asset_db.tgz';
+					if (remote_path.length > 0) {
+						lcEnvironment.download(
+							remote_path,
+							lcEnvironment.asset_dir + '/' + Date.now() + '_' + filename
+						);
+						socket.emit('message', 'start downloading...');
+					} else {
+						socket.emit('message', 'remote path is incorrect');
+					}
+				});
+				
+			}
 		});
 		//lcEnvironment.last_cmd_len = cmd.length;
 

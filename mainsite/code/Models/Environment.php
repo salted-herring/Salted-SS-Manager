@@ -1,4 +1,8 @@
-<?php use SaltedHerring\Debugger as Debugger; use SaltedHerring\Grid as Grid;
+<?php 
+use SaltedHerring\Debugger as Debugger;
+use SaltedHerring\Grid as Grid;
+use SaltedHerring\Utilities as Utilities;
+
 
 class Environment extends DataObject {
 	protected static $db = array(
@@ -59,6 +63,8 @@ class Environment extends DataObject {
 
 			$server = $server->first();
 
+			$asset_dir = Folder::find_or_make(Utilities::sanitiseClassName($this->Site()->Title) . '/' . Utilities::sanitiseClassName($this->Title));
+
 
 			$enviro = array(
 				'id'			=>	$this->ID,
@@ -72,8 +78,10 @@ class Environment extends DataObject {
 				'sql_user'		=>	$this->DBUser,
 				'sql_pass'		=>	$this->DBPass,
 				'server_addr'	=>	$server->ServerAddress,
+				'server_port'	=>	$server->Port,
 				'server_user'	=>	$server->DeployUser,
-				'server_pass'	=>	$server->DeployPass
+				'server_pass'	=>	$server->DeployPass,
+				'asset_dir'		=>	rtrim($asset_dir->getFullPath(), '/')
 			);
 
 			$fields->addFieldsToTab(
