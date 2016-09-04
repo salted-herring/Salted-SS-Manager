@@ -40,37 +40,37 @@ class Deployment extends DataObject {
 	
 	public function onAfterWrite() {
 		parent::onAfterWrite();
-		if ($env = Environment::get()->byID($this->Environment)) {
-			$cmd = '';
-			$branch = $env->BoundBranch;
-			$repo = $env->Repo()->first();
-			$site = $env->Site();
-			$msg = '';
+		// if ($env = Environment::get()->byID($this->Environment)) {
+		// 	$cmd = '';
+		// 	$branch = $env->BoundBranch;
+		// 	$repo = $env->Repo()->first();
+		// 	$site = $env->Site();
+		// 	$msg = '';
 
-			if ($server = $env->Server()->first()) {
-				if ($this->DeployType == 'Repo Sync') {
-					$cmd = DeployScripts::updateRepo($repo->RepoDirPath, $branch, $this->ComposerUpdate, $this->BowerUpdate);
+		// 	if ($server = $env->Server()->first()) {
+		// 		if ($this->DeployType == 'Repo Sync') {
+		// 			$cmd = DeployScripts::updateRepo($repo->RepoDirPath, $branch, $this->ComposerUpdate, $this->BowerUpdate);
 
-				} else {
-					$cmd = DeployScripts::Deploy($site, $env, $server, $this->ComposerUpdate, $this->BowerUpdate);
-				}
+		// 		} else {
+		// 			$cmd = DeployScripts::Deploy($site, $env, $server, $this->ComposerUpdate, $this->BowerUpdate);
+		// 		}
 
-				//Debugger::inspect($cmd);
-				$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
-				$ssh->connect();
-				$msg = $ssh->exec($cmd, true);
-				$msg = str_replace("\n", '<br />', $msg);
-			}
+		// 		//Debugger::inspect($cmd);
+		// 		$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
+		// 		$ssh->connect();
+		// 		$msg = $ssh->exec($cmd, true);
+		// 		$msg = str_replace("\n", '<br />', $msg);
+		// 	}
 
-			/*Session::set('Message', array(
-	            'Message' => $msg
-	        ));*/
+		// 	/*Session::set('Message', array(
+	 //            'Message' => $msg
+	 //        ));*/
 
-	        $log = new DeployLog();
-	        $log->Content = $msg;
-	        $log->DeploymentID = $this->ID;
-	        $log->write();
-		}	
+	 //        $log = new DeployLog();
+	 //        $log->Content = $msg;
+	 //        $log->DeploymentID = $this->ID;
+	 //        $log->write();
+		// }	
 	}
 	
 	

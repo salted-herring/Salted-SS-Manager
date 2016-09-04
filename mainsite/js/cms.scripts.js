@@ -10,25 +10,25 @@
 					socket.on('message', function (msg) {
 						console.log(msg);
 					});
+				}).on('transfer_progress', function(data){
+					console.log(data);
 				}).on('disconnect', function(data) {
-					alert('connection lost');
+					console.log('connection lost');
 				});
 			},
 			onclick: function(e) {
 				e.preventDefault();
-				/*socket.emit('download_backup', {
-					environment_id: 'enviro-' + environment.id, 
-					src: '/home/saltydev/domains/dev-sh.saltydev.com/robots.txt', 
-					dest: '/Users/leo/Sites/SDM/htdocs/assets/salted-herring/dev/robots.txt'
-				});*/
 
 				socket.emit('ssh', {
 					environment_id: 'enviro-' + environment.id, 
 					cmd: 'backup'
 				});
-				/*socket.on('message', function(data){
-					console.log(data);
-				});*/
+
+				// socket.emit('ssh', {
+				// 	environment_id: 'enviro-' + environment.id,
+				// 	cmd: 'download'
+				// });
+
 				return false;
 			}
 		});

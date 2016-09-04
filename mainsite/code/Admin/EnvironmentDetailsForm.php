@@ -27,21 +27,13 @@ class EnvironmentDetailsForm_ItemRequest extends GridFieldDetailForm_ItemRequest
 			if (!empty($server) && !empty($repo)) {
 				$label = 'Re-setup Repo';
 
-				$ssh = new SSHConnector($server->ServerAddress, $server->Port, $server->FingerPrint, $server->DeployUser, $server->DeployPass);
-				$con = $ssh->connect();
-				$cmd = DeployScripts::repoExists($repo->RepoDirPath);
-				$postback = $ssh->exec($cmd);
-				if (!$postback) {
-					$label = 'Setup Repo';
-				} else {
-					$this->repo_ready = true;
-				}
-
 				$actions->push(FormAction::create('SetupRepo', $label));
 				$actions->push(FormAction::create('CreateScripts', 'Create Deployment script'));
 				$actions->push(FormAction::create('Backup', 'Backup'));
-				$actions->push(FormAction::create('test', 'test'));
 			}
+
+
+			$actions->push(FormAction::create('test', 'test'));
 			
 			$form->setActions($actions);
 		}

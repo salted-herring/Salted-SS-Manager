@@ -38,12 +38,12 @@ class Server extends DataObject {
 
 	public function onBeforeWrite() {
 		parent::onBeforeWrite();
-		if (!empty($this->ServerAddress) && !empty($this->Port)) {
-			if ($connection = ssh2_connect($this->ServerAddress, $this->Port)) {
-				$fingerprint = ssh2_fingerprint($connection,
-	               SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX);
-				$this->FingerPrint = $fingerprint;
-			}
-		}
+		// if (!empty($this->ServerAddress) && !empty($this->Port)) {
+		// 	if ($connection = ssh2_connect($this->ServerAddress, $this->Port)) {
+		// 		$fingerprint = ssh2_fingerprint($connection,
+	 //               SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX);
+		// 		$this->FingerPrint = $fingerprint;
+		// 	}
+		// }
 	}
 }

@@ -58,3 +58,5 @@ lumberjack/
 silverstripe-optimisedimage/
 favicon.ico
 var/
+silverstripe-rest-api/
+silverstripe.log

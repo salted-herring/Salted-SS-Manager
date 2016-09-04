@@ -1,0 +1,8 @@
+---
+Name: apiroutes
+After: framework/routes#coreroutes
+---
+Director:
+  rules:
+    'deployment-panel': 'DeploymentPanel'
+    #'api/v/1/environments': 'Weixin'

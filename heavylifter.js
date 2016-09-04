@@ -6,8 +6,9 @@ process.argv.forEach(function (val, index, array) {
   console.log(index + ': ' + val);
 });
 */
-var _banches			=	[];
+var _benches			=	[];
 var scp 				=	require('scp2').Client;
+var fs 					= 	require('fs');
 var ssh 				=	require('ssh2').Client;
 var scripts				=	require('./presetScripts.js');
 var banch 				=	function(id) {
@@ -16,7 +17,6 @@ var banch 				=	function(id) {
 
 	return this;
 };
-
 
 var environment 		=	function(socket, environment) {
 	var _self			=	this;
@@ -36,35 +36,6 @@ var environment 		=	function(socket, environment) {
 	this.server_user	=	environment.server_user;
 	this.server_pass	=	environment.server_pass;
 	this.asset_dir		=	environment.asset_dir;
-	/*this.conn 			=	new ssh();
-	this.shell 			=	null;
-
-	this.conn.on('ready', function() {
-		_self.socket.emit('message', 'server connected');
-		_self.conn.shell(function(err, stream) {
-			if (err) throw err;
-			_self.shell = stream;
-			stream.on('close', function() {
-				console.log('Stream :: close');
-				_self.conn.end();
-			}).on('data', function(data) {
-				//if (_self.last_cmd_len <= 0) {
-				console.log('STDOUT: (' + data.length + ') ' + data);
-				_self.socket.emit('message', data.toString());
-				//} else {
-					//_self.last_cmd_len--;
-				//}
-			}).stderr.on('data', function(data) {
-				console.log('STDERR: ' + data);
-			});
-			//stream.end('ls -l\nexit\n');
-		});
-	}).connect({
-		host: environment.server_addr,
-	    username: environment.server_user,
-	    password: environment.server_pass//,
-		//privateKey: require('fs').readFileSync('/here/is/my/key')
-	});*/
 
 	this.run 			=	function(cmd, onDone, onFail) {
 		var conn 		=	new ssh();
@@ -80,7 +51,7 @@ var environment 		=	function(socket, environment) {
 			    	}
 			    }).on('data', function(data) {
 			    	console.log('STDOUT: ' + data);
-			    	lastOutput = data.toString();
+			    	lastOutput = data.toString().trim();
 			    	_self.socket.emit('message', data.toString());			    	
 			    }).stderr.on('data', function(data) {
 			    	console.log('STDERR: ' + data);
@@ -94,7 +65,7 @@ var environment 		=	function(socket, environment) {
 		});
 	};
 
-	this.download		=	function(src, dest) {
+	this.download		=	function(src, dest, total) {
 
 		var client 		=	new scp({
 								host: environment.server_addr,
@@ -102,6 +73,36 @@ var environment 		=	function(socket, environment) {
 							    password: environment.server_pass,
 							}),
 			socket 		=	_self.socket;
+
+		client.download = function(src, dest, callback) {
+			var self = this;
+
+		  	self.sftp(function(err,sftp){
+			    if (err) {
+			      return callback(err);
+			    }
+
+			    var sftp_readStream = sftp.createReadStream(src);
+			    sftp_readStream.on('data', function(data){
+			    	var i = sftp_readStream._readableState.pipes.bytesWritten;
+			    	//trace(i + ':' + total + ' = ' + Math.floor((i / total)*100) + '%');
+			    	//trace(sftp_readStream.sftp._state.pktBuf);
+			    	socket.emit('transfer_progress', (i / total));
+			    });
+			    sftp_readStream.on('error', function(err){
+			      callback(err);
+			    });
+			    sftp_readStream.pipe(fs.createWriteStream(dest))
+			    .on('close',function(){
+			      self.emit('read', src);
+			      self.close();
+			      callback(null);
+			    })
+			    .on('error', function(err){
+			      callback(err);
+			    });
+		  	});
+		};
 
 		client.on('error', function(err) {
 			trace('got event error', err);
@@ -112,12 +113,10 @@ var environment 		=	function(socket, environment) {
 		}).on('ready', function() {
 			trace('ready');
 			socket.emit('message', 'downloaded');
-		}).on('transfer', function(buffer, uploaded, total){
-			trace(buffer);
-			trace(uploaded);
-			trace(total);
 		}).on('end', function() {
 			socket.emit('message', 'connection closed');
+		}).on('transfer', function(progress) {
+			trace(Math.floor(progress*100) + '%');
 		});
 
 		client.download(src, dest, function(err) {
@@ -146,9 +145,9 @@ io.on('connection', function (socket) {
 	var socketID = socket.id,
 		curSocket = null;
 
-	if (_banches[socketID] === undefined) {
-		_banches[socketID] = new banch(socketID);
-		curSocket		=	_banches[socketID];
+	if (_benches[socketID] === undefined) {
+		_benches[socketID] = new banch(socketID);
+		curSocket		=	_benches[socketID];
 	}	
 
 	socket.on('message', function (data) { 
@@ -165,18 +164,11 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('ssh', function(data) {
-		// trace('params from client:');
-		// trace(params);
 		var lcEnvironment	=	curSocket.environments[data.environment_id],
 			cmd 			=	cmdmaker(data.cmd,lcEnvironment),
 			commondType		=	data.cmd;
 
 		var filename = 'ss_asset_db.tgz';
-		lcEnvironment.download(
-			'/home/saltydev/domains/dev-sh.saltydev.com/ss_asset_db.tgz',
-			lcEnvironment.asset_dir + '/' + Date.now() + '_' + filename
-		);
-		return;
 		lcEnvironment.run(cmd, function(data){
 			trace('packing done...');
 			if (commondType == 'backup') {
@@ -186,16 +178,22 @@ io.on('connection', function (socket) {
 					remote_path = remote_path.trim();
 					trace('remote: ' + remote_path);
 					trace('local: ' + lcEnvironment.asset_dir + '/' + Date.now() + '_' + filename);
-					//remote_path = '/home/saltydev/domains/dev-sh.saltydev.com/ss_asset_db.tgz';
-					if (remote_path.length > 0) {
-						lcEnvironment.download(
-							remote_path,
-							lcEnvironment.asset_dir + '/' + Date.now() + '_' + filename
-						);
-						socket.emit('message', 'start downloading...');
-					} else {
-						socket.emit('message', 'remote path is incorrect');
-					}
+					trace('command: ' + 'wc -c ' + remote_path);
+					lcEnvironment.run('wc -c ' + remote_path, function(data) {
+						var total_size = data.split(' ')[0];
+		     			total_size = parseInt(total_size);
+						socket.emit('message', 'total to download: ' + total_size + ' byptes');
+						if (remote_path.length > 0) {
+							lcEnvironment.download(
+								remote_path,
+								lcEnvironment.asset_dir + '/' + Date.now() + '_' + filename,
+								total_size
+							);
+							socket.emit('message', 'start downloading...');
+						} else {
+							socket.emit('message', 'remote path is incorrect');
+						}
+					});
 				});
 				
 			}
@@ -208,7 +206,7 @@ io.on('connection', function (socket) {
 	socket.on('disconnect', function () {
 		trace('dicconnected - ' + socketID);
 		
-		delete _banches[socketID];
+		delete _benches[socketID];
 	});
 
 	socket.on('error', function (err) {

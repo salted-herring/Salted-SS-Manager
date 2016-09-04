@@ -113,4 +113,27 @@ class Environment extends DataObject {
 			$this->DBPass		=	empty($this->DBPass) ? $this->Site()->DBPass : $this->DBPass;
 		}
 	}
+
+	public function format() {
+		$server = $this->Server()->first();
+		$asset_dir = Folder::find_or_make(Utilities::sanitiseClassName($this->Site()->Title) . '/' . Utilities::sanitiseClassName($this->Title));
+		return 
+			array(
+				'id'			=>	$this->ID,
+				'name'			=>	$this->Title,
+				'path'			=>	$this->EnvironmentDirectory,
+				'web_root'		=>	$this->Directory,
+				'branch'		=>	$this->BoundBranch,
+				'sql_dump_dir'	=>	$this->Site()->SqlDumpDirectory,
+				'sql_host'		=>	$this->DBServer,
+				'sql_table'		=>	$this->DBName,
+				'sql_user'		=>	$this->DBUser,
+				'sql_pass'		=>	$this->DBPass,
+				'server_addr'	=>	$server->ServerAddress,
+				'server_port'	=>	$server->Port,
+				'server_user'	=>	$server->DeployUser,
+				'server_pass'	=>	$server->DeployPass,
+				'asset_dir'		=>	rtrim($asset_dir->getFullPath(), '/')
+			);
+	}
 }
