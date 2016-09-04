@@ -106,6 +106,11 @@ class Environment extends DataObject {
 
 	public function onBeforeWrite() {
 		parent::onBeforeWrite();
+		
+		if (!empty($this->EnvironmentDirectory)) {
+			$this->EnvironmentDirectory = rtrim($this->EnvironmentDirectory, '/');
+		}
+
 		if (!empty($this->SiteID)) {
 			$this->DBServer		=	empty($this->DBServer) ? $this->Site()->DBServer : $this->DBServer;
 			$this->DBName		=	empty($this->DBName) ? $this->Site()->DBName : $this->DBName;
