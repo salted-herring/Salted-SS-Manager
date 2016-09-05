@@ -9,23 +9,16 @@ var ProgressBar = React.createClass({
 var Environment = React.createClass({
 
 	componentDidMount: function() {
-		var self = this;
-		this.socket.on('connect', function () {
-			//socket.send('hi');
-			this.emit('environment', self.props.data);
-			this.on('message', function (msg) {
-				console.log(msg);
-			});
-		}).on('transfer_progress', function(data){
-			console.log(data);
-		}).on('disconnect', function(data) {
-			console.log('connection lost');
-		});
+		
 	},
 
 	doBackup: function(e) {
 		e.preventDefault();
 		trace('doing backup...');
+		this.socket.emit('ssh', {
+			environment_id: 'enviro-' + this.props.data.id, 
+			cmd: 'backup'
+		});
 	},
 
 	doInit: function(e) {
@@ -40,7 +33,18 @@ var Environment = React.createClass({
 
 	render: function() {
 		this.socket = io('//'+location.hostname+':10086', {reconnection: false});
-		
+		var self = this;
+		this.socket.on('connect', function () {
+			//socket.send('hi');
+			this.emit('environment', self.props.data);
+			this.on('message', function (msg) {
+				console.log(msg);
+			});
+		}).on('transfer_progress', function(data){
+			console.log(data);
+		}).on('disconnect', function(data) {
+			console.log('connection lost');
+		});
 		return (
 			<li className="environment-item">
 				<h3 className="environment-name">{this.props.children}</h3>
