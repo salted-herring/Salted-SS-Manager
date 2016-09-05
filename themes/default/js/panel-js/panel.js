@@ -1,38 +1,4 @@
-// // tutorial4.js
-// var Comment = React.createClass({
-//   render: function() {
-//     return (
-//       <div className="comment">
-//         <h2 className="commentAuthor">
-//           {this.props.author}
-//         </h2>
-//         {this.props.children}
-//       </div>
-//     );
-//   }
-// });
-
-
-// // tutorial10.js
-// var CommentList = React.createClass({
-//   render: function() {
-//     var commentNodes = this.props.data.map(function(comment) {
-//       return (
-//         <Comment author={comment.author} key={comment.id}>
-//           {comment.text}
-//         </Comment>
-//       );
-//     });
-//     return (
-//       <div className="commentList">
-//         {commentNodes}
-//       </div>
-//     );
-//   }
-// });
-
-
-var Environment = React.createClass({
+var Site = React.createClass({
 	render: function() {
 		return (
 			<li>
@@ -43,17 +9,17 @@ var Environment = React.createClass({
 	}
 });
 
-var EnvironmentList = React.createClass({
+var SiteList = React.createClass({
 	render: function() {
 		var listNodes = this.props.data.map(function(node) {
 			return (
-				<Environment key={node.id} data={node}>
-					{node.name}
-				</Environment>
+				<Site key={node.id} data={node}>
+					{node.title}
+				</Site>
 			);
 		});
 		return (
-			<ul className="environments-list">
+			<ul className="Sites-list">
 				{listNodes}
 			</ul>
 		);
@@ -61,6 +27,6 @@ var EnvironmentList = React.createClass({
 });
 
 ReactDOM.render(
-	<EnvironmentList data={environment_data} />,
+	<SiteList data={sites} />,
 	document.getElementById('main')
 );

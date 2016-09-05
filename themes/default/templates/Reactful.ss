@@ -22,7 +22,7 @@
 			$Layout
 		</main>
 		
-		<script type="text/javascript">$Environments</script>
+		<script type="text/javascript">$Sites</script>
 		<script type="text/babel" src="/themes/default/js/panel-js/panel.js"></script>
 	</body>
 </html>

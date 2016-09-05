@@ -29,10 +29,10 @@ class DeploymentPanel extends Page_Controller {
 
 	public function getSites() {
 		$sites = Site::get();
-		$js = 'var environment_data = [';
+		$js = 'var sites = [';
 		$stringified = array();
 		foreach ($sites as $site) {
-			$stringified[] = json_encode($environment->format());
+			$stringified[] = json_encode($site->format());
 		}
 		$js .= implode(',', $stringified);
 		$js .= '];';
@@ -42,7 +42,7 @@ class DeploymentPanel extends Page_Controller {
 
 	public function getEnvironments() {
 		$environments = Environment::get();
-		$js = 'var environment_data = [';
+		$js = 'var environments = [';
 		$stringified = array();
 		foreach ($environments as $environment) {
 			$stringified[] = json_encode($environment->format());
