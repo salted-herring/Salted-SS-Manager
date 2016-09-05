@@ -35,3 +35,6 @@ SeoConfig:
 File:
   extensions:
     - FileExt
+DataList:
+  extensions:
+    - DataListExt

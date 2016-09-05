@@ -27,6 +27,19 @@ class DeploymentPanel extends Page_Controller {
 		return 'Deployment Panel';
 	}
 
+	public function getSites() {
+		$sites = Site::get();
+		$js = 'var environment_data = [';
+		$stringified = array();
+		foreach ($sites as $site) {
+			$stringified[] = json_encode($environment->format());
+		}
+		$js .= implode(',', $stringified);
+		$js .= '];';
+
+		return $js;		
+	}
+
 	public function getEnvironments() {
 		$environments = Environment::get();
 		$js = 'var environment_data = [';
