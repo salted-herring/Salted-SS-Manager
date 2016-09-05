@@ -154,6 +154,7 @@ io.on('connection', function (socket) {
 		console.log(data);
 	});
 	socket.on('environment', function(prEnvironment) {
+		trace(prEnvironment);
 		if (curSocket.environments['enviro-' + prEnvironment.id] === undefined) {
 			curSocket.environments['enviro-' + prEnvironment.id] = new environment(socket, prEnvironment);
 		}

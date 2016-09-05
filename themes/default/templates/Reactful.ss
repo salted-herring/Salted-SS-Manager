@@ -16,7 +16,8 @@
 		<% include GA %>
 	</head>
 	<body class="page-$URLSegment<% if $isMobile %> mobile<% end_if %> page-type-$BodyClass.LowerCase">
-		
+		<header id="header">
+		</header>
 		
 		<main id="main" class="container">
 			$Layout

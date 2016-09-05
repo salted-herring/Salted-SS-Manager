@@ -14,7 +14,8 @@ class DeploymentPanel extends Page_Controller {
 	        	'themes/default/js/components/react/react.js',
 	            'themes/default/js/components/react/react-dom.js',
 	            'themes/default/js/components/salted-js/dist/salted-js.min.js',
-	            'https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js'
+	            'https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js',
+	            'themes/default/js/socket.io.js',
 	        )
         );
 	}
