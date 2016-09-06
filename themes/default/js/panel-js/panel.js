@@ -1,7 +1,7 @@
 var ProgressBar = React.createClass({
 	render: function() {
 		return (
-			<div className="progress-bar"><span className="progress-bar__percentage">0%</span></div>
+			<div className="progress-bar"><div className="progress-bar__bar"></div><span className="progress-bar__percentage">{this.props.percentage}%</span></div>
 		);
 	}
 });
@@ -9,7 +9,23 @@ var ProgressBar = React.createClass({
 var Environment = React.createClass({
 
 	componentDidMount: function() {
-		
+		this.socket = io('//'+location.hostname+':10086', {reconnection: false});
+		var self = this;
+		this.socket.on('connect', function () {
+			trace('connected');
+			this.emit('environment', self.props.data);
+			this.on('message', function (msg) {
+				self.setState({
+			    	message : msg
+			    });
+			});
+		}).on('transfer_progress', function(data){
+			self.setState({
+		    	percentage : Math.ceil(data * 100)
+		    });
+		}).on('disconnect', function(data) {
+			console.log('connection lost');
+		});
 	},
 
 	doBackup: function(e) {
@@ -31,20 +47,15 @@ var Environment = React.createClass({
 		trace('deploying...');
 	},
 
+	getInitialState : function() {
+	    return {
+	    	message: '',
+	    	percentage : 0
+	    };
+	},
+
 	render: function() {
-		this.socket = io('//'+location.hostname+':10086', {reconnection: false});
-		var self = this;
-		this.socket.on('connect', function () {
-			//socket.send('hi');
-			this.emit('environment', self.props.data);
-			this.on('message', function (msg) {
-				console.log(msg);
-			});
-		}).on('transfer_progress', function(data){
-			console.log(data);
-		}).on('disconnect', function(data) {
-			console.log('connection lost');
-		});
+
 		return (
 			<li className="environment-item">
 				<h3 className="environment-name">{this.props.children}</h3>
@@ -56,7 +67,8 @@ var Environment = React.createClass({
 					<button onClick={this.doBackup} href="#">Backup</button>
 					<button onClick={this.doDeployment} href="#">Deploy</button>
 				</div>
-				<ProgressBar />
+				<div className="message-channel">Server message: {this.state.message}</div>
+				<ProgressBar percentage={this.state.percentage} />
 			</li>
 		);
 	}

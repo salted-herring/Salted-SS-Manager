@@ -27,6 +27,7 @@ class Environment extends DataObject {
 	);
 
 	protected static $has_one = array(
+		'AssetFolder'			=>	'Folder',
 		'Site'					=>	'Site',
 		'htaccess'				=>	'HtAccess'
 	);
@@ -63,9 +64,6 @@ class Environment extends DataObject {
 
 			$server = $server->first();
 
-			$asset_dir = Folder::find_or_make(Utilities::sanitiseClassName($this->Site()->Title) . '/' . Utilities::sanitiseClassName($this->Title));
-
-
 			$enviro = array(
 				'id'			=>	$this->ID,
 				'name'			=>	$this->Title,
@@ -81,7 +79,8 @@ class Environment extends DataObject {
 				'server_port'	=>	$server->Port,
 				'server_user'	=>	$server->DeployUser,
 				'server_pass'	=>	$server->DeployPass,
-				'asset_dir'		=>	rtrim($asset_dir->getFullPath(), '/')
+				'asset_dir'		=>	rtrim($this->AssetFolder()->getFullPath(), '/'),
+				'local_root'	=>	Director::baseFolder()
 			);
 
 			$fields->addFieldsToTab(
@@ -111,6 +110,11 @@ class Environment extends DataObject {
 			$this->EnvironmentDirectory = rtrim($this->EnvironmentDirectory, '/');
 		}
 
+		if (!empty($this->Title) && !empty($this->SiteID)) {
+			$assetFolder = Folder::find_or_make(Utilities::sanitiseClassName($this->Site()->Title) . '/' . Utilities::sanitiseClassName($this->Title));
+			$this->AssetFolderID = $assetFolder->ID;
+		}
+
 		if (!empty($this->SiteID)) {
 			$this->DBServer		=	empty($this->DBServer) ? $this->Site()->DBServer : $this->DBServer;
 			$this->DBName		=	empty($this->DBName) ? $this->Site()->DBName : $this->DBName;
@@ -121,7 +125,6 @@ class Environment extends DataObject {
 
 	public function format() {
 		$server = $this->Server()->first();
-		$asset_dir = Folder::find_or_make(Utilities::sanitiseClassName($this->Site()->Title) . '/' . Utilities::sanitiseClassName($this->Title));
 		return 
 			array(
 				'id'			=>	$this->ID,
@@ -138,7 +141,7 @@ class Environment extends DataObject {
 				'server_port'	=>	$server->Port,
 				'server_user'	=>	$server->DeployUser,
 				'server_pass'	=>	$server->DeployPass,
-				'asset_dir'		=>	rtrim($asset_dir->getFullPath(), '/')
+				'asset_dir'		=>	rtrim($this->AssetFolder()->getFullPath(), '/')
 			);
 	}
 }

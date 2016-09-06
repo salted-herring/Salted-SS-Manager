@@ -11,6 +11,9 @@ var scp 				=	require('scp2').Client;
 var fs 					= 	require('fs');
 var ssh 				=	require('ssh2').Client;
 var scripts				=	require('./presetScripts.js');
+var sys 				= 	require('sys');
+var exec 				= 	require('child_process').exec;
+
 var banch 				=	function(id) {
 	this.id 			=	id;
 	this.environments  	=	[];
@@ -36,6 +39,7 @@ var environment 		=	function(socket, environment) {
 	this.server_user	=	environment.server_user;
 	this.server_pass	=	environment.server_pass;
 	this.asset_dir		=	environment.asset_dir;
+	this.local_root		=	environment.local_root;
 
 	this.run 			=	function(cmd, onDone, onFail) {
 		var conn 		=	new ssh();
@@ -65,7 +69,7 @@ var environment 		=	function(socket, environment) {
 		});
 	};
 
-	this.download		=	function(src, dest, total) {
+	this.download		=	function(src, dest, total, callback) {
 
 		var client 		=	new scp({
 								host: environment.server_addr,
@@ -112,7 +116,7 @@ var environment 		=	function(socket, environment) {
 			socket.emit('message', 'connecting...');
 		}).on('ready', function() {
 			trace('ready');
-			socket.emit('message', 'downloaded');
+			socket.emit('message', 'Start downloading...');
 		}).on('end', function() {
 			socket.emit('message', 'connection closed');
 		}).on('transfer', function(progress) {
@@ -125,6 +129,9 @@ var environment 		=	function(socket, environment) {
 				trace(err);
 			} else {
 				socket.emit('message', 'done transferring');
+				if (callback) {
+					callback();
+				}
 			}
 			client.close();
 		});
@@ -182,13 +189,26 @@ io.on('connection', function (socket) {
 					trace('command: ' + 'wc -c ' + remote_path);
 					lcEnvironment.run('wc -c ' + remote_path, function(data) {
 						var total_size = data.split(' ')[0];
+						trace('remote file size: ' + data);
 		     			total_size = parseInt(total_size);
 						socket.emit('message', 'total to download: ' + total_size + ' byptes');
 						if (remote_path.length > 0) {
+							filename = Date.now() + '_' + filename;
 							lcEnvironment.download(
 								remote_path,
-								lcEnvironment.asset_dir + '/' + Date.now() + '_' + filename,
-								total_size
+								lcEnvironment.asset_dir + '/' + filename,
+								total_size,
+								function() {
+									var emitter = function(error, stdout, stderr) { 
+											trace(error);
+											trace(stdout);
+											trace(stderr);
+											socket.emit('message', stdout);
+										},
+										task = '/dev/tasks/AttachFile ' + lcEnvironment.id + ' ' + filename;
+									exec('cd ' + lcEnvironment.local_root + ' && sake ' + task, emitter);
+									//cd /var/www/vhosts/nzairports.co.nz/httpdocs/ && php framework/cli-script.php /dev/tasks/PurgeExpired >> /var/www/vhosts/nzairports.co.nz/tasklogs/task_runner.log
+								}
 							);
 							socket.emit('message', 'start downloading...');
 						} else {
