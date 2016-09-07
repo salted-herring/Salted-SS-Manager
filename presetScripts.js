@@ -31,3 +31,15 @@ exports.tar = function(things, file_name) {
 	var things = things.join(' ');
 	return 'tar -zcvf ' + file_name + ' ' + things + ';';
 }
+
+exports.git = function(cmd) {
+	return 'git ' + cmd + ';'
+}
+
+exports.composerUpdate = function() {
+	return 'composer update;';
+}
+
+exports.bowerUpdate = function(isRoot) {
+	return 'bower update --allow-root;';
+}

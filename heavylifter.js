@@ -28,6 +28,8 @@ var environment 		=	function(socket, environment) {
 	this.name			=	environment.name;
 	this.path			=	environment.path;
 	this.web_root		=	environment.web_root;
+	this.git			=	environment.git;
+	this.repo_dir 		=	environment.repo_dir;
 	this.branch			=	environment.branch;
 	this.sql_dump_dir	=	environment.sql_dump_dir;
 	this.sql_host		=	environment.sql_host;
@@ -175,10 +177,9 @@ io.on('connection', function (socket) {
 		var lcEnvironment	=	curSocket.environments[data.environment_id],
 			cmd 			=	cmdmaker(data.cmd,lcEnvironment),
 			commondType		=	data.cmd;
-
-		var filename = 'ss_asset_db.tgz';
+		trace(cmd);
 		lcEnvironment.run(cmd, function(data){
-			trace('packing done...');
+			trace(data);
 			if (commondType == 'backup') {
 				trace('checking realpath...');
 				var filename = 'ss_asset_db.tgz';
@@ -256,6 +257,19 @@ function cmdmaker(prCmd, environment) {
 				]
 			);
 
+			break;
+		case 'setup':
+			cmd = scripts.cd(environment.path);
+			cmd += scripts.mkdir(environment.repo_dir);
+			cmd += scripts.chown(environment.server_user, environment.repo_dir);
+			cmd += scripts.cd(environment.repo_dir);
+			cmd += scripts.git('init');
+			cmd += scripts.git('remote add origin ' + environment.git);
+			cmd += scripts.git('fetch --all');
+			cmd += scripts.git('checkout ' + environment.branch);
+			cmd += scripts.composerUpdate();
+			cmd += scripts.cd('themes/default');
+			cmd += scripts.bowerUpdate();
 			break;
 	}
 

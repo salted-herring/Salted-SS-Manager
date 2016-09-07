@@ -40,6 +40,10 @@ var Environment = React.createClass({
 	doInit: function(e) {
 		e.preventDefault();
 		trace('init environment...');
+		this.socket.emit('ssh', {
+			environment_id: 'enviro-' + this.props.data.id, 
+			cmd: 'setup'
+		});
 	},
 
 	doDeployment: function(e) {

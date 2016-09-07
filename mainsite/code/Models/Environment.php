@@ -9,11 +9,13 @@ class Environment extends DataObject {
 		'Title'					=>	'Varchar(48)',
 		'EnvironmentDirectory'	=>	'Text',
 		'Directory'				=>	'Varchar(256)',
+		'RepoDir'				=>	'Varchar(256)',
 		'BoundBranch'			=>	'Varchar(256)'
 	);
 	
 	protected static $defaults = array(
-		'Directory'				=>	'htdocs'
+		'Directory'				=>	'htdocs',
+		'RepoDir'				=>	'repo'
 	);
 	
 	protected static $summary_fields = array(
@@ -53,9 +55,14 @@ class Environment extends DataObject {
 		$fields = parent::getCMSFields();
 		$fields->removeByName('SiteID');
 		$fields->removeByName('Server');
+		$fields->removeByName('AssetFolder');
 		$fields->fieldByName('Root.Main.Directory')->setTitle('Directory for www-root');
 		if (!empty($this->SiteID)) {
 			$fields->addFieldsToTab('Root.Server', Grid::make('Server', 'Server', $this->Server(), false, 'GridFieldConfig_RelationEditor'));
+		}
+
+		if (!empty($this->AssetFolderID)) {
+			$fields->addFieldsToTab('Root.AssetsAndDatabase', LiteralField::create('AssetFolderPath', '<h2>Asset Folder</h2><p>' . $this->AssetFolder()->getFullPath() . '</p>'), 'AssetsAndDatabase');
 		}
 
 		$server = $this->Server();
@@ -69,6 +76,7 @@ class Environment extends DataObject {
 				'name'			=>	$this->Title,
 				'path'			=>	$this->EnvironmentDirectory,
 				'web_root'		=>	$this->Directory,
+				'repo_dir'		=>	$this->RepoDir,
 				'branch'		=>	$this->BoundBranch,
 				'sql_dump_dir'	=>	$this->Site()->SqlDumpDirectory,
 				'sql_host'		=>	$this->DBServer,
@@ -125,23 +133,31 @@ class Environment extends DataObject {
 
 	public function format() {
 		$server = $this->Server()->first();
-		return 
-			array(
-				'id'			=>	$this->ID,
-				'name'			=>	$this->Title,
-				'path'			=>	$this->EnvironmentDirectory,
-				'web_root'		=>	$this->Directory,
-				'branch'		=>	$this->BoundBranch,
-				'sql_dump_dir'	=>	$this->Site()->SqlDumpDirectory,
-				'sql_host'		=>	$this->DBServer,
-				'sql_table'		=>	$this->DBName,
-				'sql_user'		=>	$this->DBUser,
-				'sql_pass'		=>	$this->DBPass,
-				'server_addr'	=>	$server->ServerAddress,
-				'server_port'	=>	$server->Port,
-				'server_user'	=>	$server->DeployUser,
-				'server_pass'	=>	$server->DeployPass,
-				'asset_dir'		=>	rtrim($this->AssetFolder()->getFullPath(), '/')
-			);
+		$data = array(
+					'id'			=>	$this->ID,
+					'name'			=>	$this->Title,
+					'path'			=>	$this->EnvironmentDirectory,
+					'web_root'		=>	$this->Directory,
+					'git'			=>	'',
+					'repo_dir'		=>	$this->RepoDir,
+					'branch'		=>	$this->BoundBranch,
+					'sql_dump_dir'	=>	$this->Site()->SqlDumpDirectory,
+					'sql_host'		=>	$this->DBServer,
+					'sql_table'		=>	$this->DBName,
+					'sql_user'		=>	$this->DBUser,
+					'sql_pass'		=>	$this->DBPass,
+					'server_addr'	=>	$server->ServerAddress,
+					'server_port'	=>	$server->Port,
+					'server_user'	=>	$server->DeployUser,
+					'server_pass'	=>	$server->DeployPass,
+					'asset_dir'		=>	rtrim($this->AssetFolder()->getFullPath(), '/')
+				);
+
+		if ($this->Repo()->first()) {
+
+			$data['git']			=	$this->Repo()->first()->Repo;
+		}
+
+		return $data;
 	}
 }
