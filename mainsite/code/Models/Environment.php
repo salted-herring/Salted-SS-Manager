@@ -65,49 +65,6 @@ class Environment extends DataObject {
 			$fields->addFieldsToTab('Root.AssetsAndDatabase', LiteralField::create('AssetFolderPath', '<h2>Asset Folder</h2><p>' . $this->AssetFolder()->getFullPath() . '</p>'), 'AssetsAndDatabase');
 		}
 
-		$server = $this->Server();
-
-		if ($server->count() > 0) {
-
-			$server = $server->first();
-
-			$enviro = array(
-				'id'			=>	$this->ID,
-				'name'			=>	$this->Title,
-				'path'			=>	$this->EnvironmentDirectory,
-				'web_root'		=>	$this->Directory,
-				'repo_dir'		=>	$this->RepoDir,
-				'branch'		=>	$this->BoundBranch,
-				'sql_dump_dir'	=>	$this->Site()->SqlDumpDirectory,
-				'sql_host'		=>	$this->DBServer,
-				'sql_table'		=>	$this->DBName,
-				'sql_user'		=>	$this->DBUser,
-				'sql_pass'		=>	$this->DBPass,
-				'server_addr'	=>	$server->ServerAddress,
-				'server_port'	=>	$server->Port,
-				'server_user'	=>	$server->DeployUser,
-				'server_pass'	=>	$server->DeployPass,
-				'asset_dir'		=>	rtrim($this->AssetFolder()->getFullPath(), '/'),
-				'local_root'	=>	Director::baseFolder()
-			);
-
-			$fields->addFieldsToTab(
-				'Root.Main', 
-				LiteralField::create(
-					'EnvironmentScript', 
-					"<script type=\"text/javascript\">var environment = ". json_encode($enviro) .";</script>"
-				)
-			);
-		}
-
-		Requirements::combine_files(
-            'socket.js',
-            array(
-                'themes/default/js/socket.io.js',
-                'mainsite/js/cms.scripts.js'
-			)
-		);
-
 		return $fields;
 	}
 
@@ -150,7 +107,8 @@ class Environment extends DataObject {
 					'server_port'	=>	$server->Port,
 					'server_user'	=>	$server->DeployUser,
 					'server_pass'	=>	$server->DeployPass,
-					'asset_dir'		=>	rtrim($this->AssetFolder()->getFullPath(), '/')
+					'asset_dir'		=>	rtrim($this->AssetFolder()->getFullPath(), '/'),
+					'local_root'	=>	Director::baseFolder()
 				);
 
 		if ($this->Repo()->first()) {

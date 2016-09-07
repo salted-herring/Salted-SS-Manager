@@ -18,6 +18,10 @@ var Environment = React.createClass({
 				self.setState({
 			    	message : msg
 			    });
+			}).on('repo_exist', function(b) {
+				self.setState({
+					repo_label: b ? 'Re-steup' : 'Setup'
+				});
 			});
 		}).on('transfer_progress', function(data){
 			self.setState({
@@ -40,10 +44,11 @@ var Environment = React.createClass({
 	doInit: function(e) {
 		e.preventDefault();
 		trace('init environment...');
+		var self = this;
 		this.socket.emit('ssh', {
 			environment_id: 'enviro-' + this.props.data.id, 
 			cmd: 'setup'
-		});
+		}, self.state.repo_label == 'Re-steup' ? 'destruct-repo' : null);
 	},
 
 	doDeployment: function(e) {
@@ -54,7 +59,8 @@ var Environment = React.createClass({
 	getInitialState : function() {
 	    return {
 	    	message: '',
-	    	percentage : 0
+	    	percentage : 0,
+	    	repo_label: 'Setup'
 	    };
 	},
 
@@ -67,7 +73,7 @@ var Environment = React.createClass({
 					{this.props.data.path}
 				</div>
 				<div className="actions clearfix">
-					<button onClick={this.doInit} href="#">Setup</button>
+					<button onClick={this.doInit} href="#">{this.state.repo_label}</button>
 					<button onClick={this.doBackup} href="#">Backup</button>
 					<button onClick={this.doDeployment} href="#">Deploy</button>
 				</div>

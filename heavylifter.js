@@ -11,7 +11,6 @@ var scp 				=	require('scp2').Client;
 var fs 					= 	require('fs');
 var ssh 				=	require('ssh2').Client;
 var scripts				=	require('./presetScripts.js');
-var sys 				= 	require('sys');
 var exec 				= 	require('child_process').exec;
 
 var banch 				=	function(id) {
@@ -167,57 +166,70 @@ io.on('connection', function (socket) {
 		if (curSocket.environments['enviro-' + prEnvironment.id] === undefined) {
 			curSocket.environments['enviro-' + prEnvironment.id] = new environment(socket, prEnvironment);
 		}
+
+		var lcEnvironment = curSocket.environments['enviro-' + prEnvironment.id],
+			cmd 			=	'[[ -d ' + lcEnvironment.path + '/' + lcEnvironment.repo_dir + '/.git ]] && echo 1 || echo 0;';
+		trace(cmd);
+		lcEnvironment.run(cmd, function(data) {
+			socket.emit('repo_exist', Boolean(parseInt(data)));
+		});
+		
 	});
 
 	socket.on('download_backup', function(data) {
 		curSocket.environments[data.environment_id].download(data.src, data.dest);
 	});
 
-	socket.on('ssh', function(data) {
+	socket.on('ssh', function(data, preCmd) {
 		var lcEnvironment	=	curSocket.environments[data.environment_id],
-			cmd 			=	cmdmaker(data.cmd,lcEnvironment),
+			preCmd 			=	preCmd ? cmdmaker(preCmd, lcEnvironment) : '';
+			cmd 			=	preCmd + cmdmaker(data.cmd,lcEnvironment),
 			commondType		=	data.cmd;
 		trace(cmd);
 		lcEnvironment.run(cmd, function(data){
 			trace(data);
-			if (commondType == 'backup') {
-				trace('checking realpath...');
-				var filename = 'ss_asset_db.tgz';
-				lcEnvironment.run('realpath ' + lcEnvironment.path + '/' + filename, function(remote_path) {
-					remote_path = remote_path.trim();
-					trace('remote: ' + remote_path);
-					trace('local: ' + lcEnvironment.asset_dir + '/' + Date.now() + '_' + filename);
-					trace('command: ' + 'wc -c ' + remote_path);
-					lcEnvironment.run('wc -c ' + remote_path, function(data) {
-						var total_size = data.split(' ')[0];
-						trace('remote file size: ' + data);
-		     			total_size = parseInt(total_size);
-						socket.emit('message', 'total to download: ' + total_size + ' byptes');
-						if (remote_path.length > 0) {
-							filename = Date.now() + '_' + filename;
-							lcEnvironment.download(
-								remote_path,
-								lcEnvironment.asset_dir + '/' + filename,
-								total_size,
-								function() {
-									var emitter = function(error, stdout, stderr) { 
-											trace(error);
-											trace(stdout);
-											trace(stderr);
-											socket.emit('message', stdout);
-										},
-										task = '/dev/tasks/AttachFile ' + lcEnvironment.id + ' ' + filename;
-									exec('cd ' + lcEnvironment.local_root + ' && sake ' + task, emitter);
-									//cd /var/www/vhosts/nzairports.co.nz/httpdocs/ && php framework/cli-script.php /dev/tasks/PurgeExpired >> /var/www/vhosts/nzairports.co.nz/tasklogs/task_runner.log
-								}
-							);
-							socket.emit('message', 'start downloading...');
-						} else {
-							socket.emit('message', 'remote path is incorrect');
-						}
+			switch (commondType) {
+				case 'backup':
+					trace('checking realpath...');
+					var filename = 'ss_asset_db.tgz';
+					lcEnvironment.run('realpath ' + lcEnvironment.path + '/' + filename, function(remote_path) {
+						remote_path = remote_path.trim();
+						trace('remote: ' + remote_path);
+						trace('local: ' + lcEnvironment.asset_dir + '/' + Date.now() + '_' + filename);
+						trace('command: ' + 'wc -c ' + remote_path);
+						lcEnvironment.run('wc -c ' + remote_path, function(data) {
+							var total_size = data.split(' ')[0];
+							trace('remote file size: ' + data);
+			     			total_size = parseInt(total_size);
+							socket.emit('message', 'total to download: ' + total_size + ' byptes');
+							if (remote_path.length > 0) {
+								filename = Date.now() + '_' + filename;
+								lcEnvironment.download(
+									remote_path,
+									lcEnvironment.asset_dir + '/' + filename,
+									total_size,
+									function() {
+										var emitter = function(error, stdout, stderr) { 
+												trace(error);
+												trace(stdout);
+												trace(stderr);
+												socket.emit('message', stdout);
+											},
+											task = '/dev/tasks/AttachFile ' + lcEnvironment.id + ' ' + filename;
+										exec('cd ' + lcEnvironment.local_root + ' && sake ' + task, emitter);
+										//cd /var/www/vhosts/nzairports.co.nz/httpdocs/ && php framework/cli-script.php /dev/tasks/PurgeExpired >> /var/www/vhosts/nzairports.co.nz/tasklogs/task_runner.log
+									}
+								);
+								socket.emit('message', 'start downloading...');
+							} else {
+								socket.emit('message', 'remote path is incorrect');
+							}
+						});
 					});
-				});
-				
+					break;
+				case 'setup':
+					socket.emit('message', 'Repo initialised');
+					break;
 			}
 		});
 		//lcEnvironment.last_cmd_len = cmd.length;
@@ -270,6 +282,9 @@ function cmdmaker(prCmd, environment) {
 			cmd += scripts.composerUpdate();
 			cmd += scripts.cd('themes/default');
 			cmd += scripts.bowerUpdate();
+			break;
+		case 'destruct-repo':
+			cmd = scripts.rm(environment.path + '/' + environment.repo_dir);
 			break;
 	}
 
