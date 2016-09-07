@@ -8,7 +8,7 @@ var ProgressBar = React.createClass({
 
 var Environment = React.createClass({
 
-	componentDidMount: function() {
+	componentWillMount: function() {
 		this.socket = io('//'+location.hostname+':10086', {reconnection: false});
 		var self = this;
 		this.socket.on('connect', function () {
@@ -30,6 +30,10 @@ var Environment = React.createClass({
 		}).on('disconnect', function(data) {
 			console.log('connection lost');
 		});
+	},
+
+	componentDidMount: function() {
+		
 	},
 
 	doBackup: function(e) {
