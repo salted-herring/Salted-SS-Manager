@@ -107,6 +107,8 @@ class Environment extends DataObject {
 					'server_port'	=>	$server->Port,
 					'server_user'	=>	$server->DeployUser,
 					'server_pass'	=>	$server->DeployPass,
+					'require_sudo'	=>	$server->RequireSudo,
+					'ssh_key'		=>	$server->PrivateKeyPath,
 					'asset_dir'		=>	rtrim($this->AssetFolder()->getFullPath(), '/'),
 					'local_root'	=>	Director::baseFolder()
 				);
@@ -115,6 +117,7 @@ class Environment extends DataObject {
 
 			$data['git']			=	$this->Repo()->first()->Repo;
 		}
+
 
 		return $data;
 	}

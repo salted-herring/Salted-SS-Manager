@@ -5,11 +5,11 @@ class Server extends DataObject {
 		'Title'				=>	'Varchar(48)',
 		'ServerAddress'		=>	'Varchar(256)',
 		'Port'				=>	'Int',
-		'FingerPrint'		=>	'Text',
 		'wwwUser'			=>	'Varchar(128)',
 		'DeployUser'		=>	'Varchar(256)',
 		'DeployPass'		=>	'Varchar(256)',
-		'RequireSudo'		=>	'Boolean'
+		'RequireSudo'		=>	'Boolean',
+		'PrivateKeyPath'	=>	'Text'
 	);
 
 	protected static $default_sort = array(
@@ -17,7 +17,8 @@ class Server extends DataObject {
 	);
 
 	protected static $has_one = array(
-		'Site'				=>	'Site'
+		'Site'				=>	'Site',
+		
 	);
 	
 	protected static $belongs_many_many = array(
@@ -36,14 +37,13 @@ class Server extends DataObject {
 		'DeployPass'
 	);
 
+	public function getCMSFields() {
+		$fields = parent::getCMSFields();
+		//SaltedHerring\Debugger::inspect($this->getPrivateKeyPath());
+		return $fields;
+	}
+
 	public function onBeforeWrite() {
 		parent::onBeforeWrite();
-		// if (!empty($this->ServerAddress) && !empty($this->Port)) {
-		// 	if ($connection = ssh2_connect($this->ServerAddress, $this->Port)) {
-		// 		$fingerprint = ssh2_fingerprint($connection,
-	 //               SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX);
-		// 		$this->FingerPrint = $fingerprint;
-		// 	}
-		// }
 	}
 }

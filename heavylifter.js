@@ -39,15 +39,37 @@ var environment 		=	function(socket, environment) {
 	this.server_port	=	environment.server_port;
 	this.server_user	=	environment.server_user;
 	this.server_pass	=	environment.server_pass;
+	this.require_sudo	=	environment.require_sudo;
+	this.ssh_key		=	environment.ssh_key;
 	this.asset_dir		=	environment.asset_dir;
 	this.local_root		=	environment.local_root;
 
 	this.run 			=	function(cmd, onDone, onFail) {
 		var conn 		=	new ssh();
+		var conConfig	=	{
+			host: environment.server_addr,
+			port: environment.server_port,
+		    username: environment.server_user
+		};
+
+		if (_self.ssh_key && _self.ssh_key.length > 0) {
+			if (environment.server_pass.length > 0) {
+				conConfig.tryKeyboard = true;
+			}
+			conConfig.publickey = require('fs').readFileSync(environment.ssh_key);
+		} else {
+			conConfig.password = environment.server_pass;
+		}
+
 		conn.on('ready', function() {
-			conn.exec(cmd ? cmd : 'uptime', function(err, stream) {
+
+			conn.exec(cmd ? cmd : 'uptime',  function(err, stream) {
 			    if (err) throw err;
 			    var lastOutput = '';
+			    /*if (environment.require_sudo) {
+			    	trace(environment.server_pass);
+			    	stream.write(environment.server_pass + "\n");
+			    }*/
 			    stream.on('close', function(code, signal) {
 			    	console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
 			     	conn.end();
@@ -62,18 +84,24 @@ var environment 		=	function(socket, environment) {
 			    	console.log('STDERR: ' + data);
 			    });
 			});
-		}).connect({
-			host: environment.server_addr,
-		    username: environment.server_user,
-		    password: environment.server_pass//,
-			//privateKey: require('fs').readFileSync('/here/is/my/key')
-		});
+		}).on('error', function(err) {
+			trace(err);
+		}).connect(conConfig);
+
+		if (conConfig.publickey && conConfig.tryKeyboard) {
+			conn.on('keyboard-interactive', function(name, instructions, instructionsLang, prompts, finish) {
+			  console.log('Connection :: keyboard-interactive');
+			  finish([environment.server_pass]);
+			});
+		}
+
 	};
 
 	this.download		=	function(src, dest, total, callback) {
 
 		var client 		=	new scp({
 								host: environment.server_addr,
+								port: environment.server_port,
 							    username: environment.server_user,
 							    password: environment.server_pass,
 							}),
@@ -272,7 +300,13 @@ function cmdmaker(prCmd, environment) {
 			break;
 		case 'setup':
 			cmd = scripts.cd(environment.path);
+			if (environment.require_sudo) {
+				cmd += scripts.sudo(environment.server_pass);
+			}
 			cmd += scripts.mkdir(environment.repo_dir);
+			if (environment.require_sudo) {
+				cmd += scripts.sudo(environment.server_pass);
+			}
 			cmd += scripts.chown(environment.server_user, environment.repo_dir);
 			cmd += scripts.cd(environment.repo_dir);
 			cmd += scripts.git('init');

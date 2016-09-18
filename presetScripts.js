@@ -43,3 +43,7 @@ exports.composerUpdate = function() {
 exports.bowerUpdate = function(isRoot) {
 	return 'bower update --allow-root;';
 }
+
+exports.sudo = function(pass) {
+	return "echo '" + pass + "' | sudo -S ";
+}
