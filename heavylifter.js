@@ -313,12 +313,21 @@ function cmdmaker(prCmd, environment) {
 			cmd += scripts.git('remote add origin ' + environment.git);
 			cmd += scripts.git('fetch --all');
 			cmd += scripts.git('checkout ' + environment.branch);
+			if (environment.require_sudo) {
+				cmd += scripts.sudo(environment.server_pass);
+			}
 			cmd += scripts.composerUpdate();
+			cmd += scripts.initSubmodule();
+			cmd += scripts.updateSubmodule();
 			cmd += scripts.cd('themes/default');
 			cmd += scripts.bowerUpdate();
 			break;
 		case 'destruct-repo':
-			cmd = scripts.rm(environment.path + '/' + environment.repo_dir);
+			cmd = '';
+			if (environment.require_sudo) {
+				cmd += scripts.sudo(environment.server_pass);
+			}
+			cmd += scripts.rm(environment.path + '/' + environment.repo_dir);
 			break;
 	}
 
